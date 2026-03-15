@@ -75,13 +75,21 @@ class AnalyseStatistics(ApplyMask):
       norm = np.sum(mask)
       self.weight.append(float(norm))
 
+      if norm == 0:
+        self.std.append(0.0)
+        self.mean.append(0.0)
+        self.mode.append(0.0)
+        for quantile in self.quantiles:
+          self.quantiles[quantile].append(0.0)
+        continue
+      
       samples = np.asarray(self.input_stack[i][mask == 1]).flatten()
       self.mean.append(float(np.sum(samples) / norm))
       self.std.append(float(np.sqrt(np.sum((samples - self.mean[-1])**2) / norm)))
 
       for quantile in self.quantiles:
         self.quantiles[quantile].append(float(np.percentile(
-          self.input_stack[i], quantile, weights=mask, method="inverted_cdf"
+          samples, quantile, method="inverted_cdf"
         )))
 
       self.mode.append(float(self.half_sample_mode(samples)))
