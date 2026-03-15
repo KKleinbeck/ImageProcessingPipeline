@@ -25,6 +25,7 @@ class Extrapolate(AbstractProcessStep):
     self.extrapolated_stack = self.input_stack
     self.extrapolated_stack[:first_valid_frame,:,:] = self.input_stack[first_valid_frame,:,:]
     self.extrapolated_stack[last_valid_frame:,:,:] = self.input_stack[last_valid_frame-1,:,:]
+    self.extrapolated_frames = self.extrapolated_frames.tolist() # To support serialisation
 
 
 process_steps["Extrapolate"] = Extrapolate
