@@ -1,0 +1,54 @@
+[package]
+name = "ImageProcessingPipeline"
+
+[package.build]  
+backend = { name = "pixi-build-python", version = "0.*" }
+
+[package.host-dependencies]  
+hatchling = "*"
+
+[workspace]
+authors = ["Kevin Kleibeck <kekleinbeck@gmail.com>", "Emma Crean <Emma.Crean@tum.de>"]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+preview = ["pixi-build"]
+version = "0.1.0"
+
+[tasks]
+# Code Quality
+lint      = { default-environment = "dev",  cmd = "ruff check --fix" }
+typecheck = { default-environment = "dev",  cmd = "ty check" }
+# Documentation
+docs      = { default-environment = "docs", cmd = "properdocs build" }
+# Testing
+test      = { default-environment = "dev",  cmd = "pytest" }
+unit      = { default-environment = "dev",  cmd = "pytest -m unit" }
+
+[pypi-dependencies]
+image_processing_pipeline = { path = ".", editable = true }
+
+[environments]
+default = { solve-group = "default" }
+
+[environments.dev]
+features = ["dev"]
+solve-group = "default"
+
+[environments.docs]
+features = ["docs"]
+
+[feature.dev.dependencies]
+pytest = "*"
+ruff = "*"
+ty = "*"
+pre-commit = "*"
+jupyter = ">=1.1.1,<2"
+jinja2 = ">=3.1.6,<4"
+
+[feature.docs.dependencies]
+properdocs = ">=1.6.7,<2"
+
+[feature.docs.pypi-dependencies]
+properdocs-theme-readthedocs = ">=1.6.5, <2"
+mkdocstrings = ">=1.0.6, <2"
+mkdocs-api-autonav = ">=0.4.0, <0.5"

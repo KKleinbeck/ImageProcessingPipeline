@@ -1,0 +1,9 @@
+[environment]
+root = ["./src"]
+python = ".pixi/envs/dev"
+
+[rules]
+raw-string-type-annotation = "ignore" # Required to enable `RegexInput` Architecture
+
+[src]
+include = ["docs", "src", "tests"]

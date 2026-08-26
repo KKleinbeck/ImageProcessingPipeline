@@ -1,0 +1,17 @@
+Inputs:
+  - MyNumber
+
+PipelineSteps:
+  - DisplayId: Offset by 3
+    ProcessStep: NumberAdder
+    Inputs:
+      number_1: MyNumber
+    Options:
+      extra_summand: 3
+    Deliverables:
+      sum: MyNumberPlus3
+
+Serialisations:
+- RelativeOutputPath: "."
+  Data:
+    - MyNumberPlus3

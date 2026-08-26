@@ -1,0 +1,10 @@
+exclude = [".pixi", ".venv"]
+indent-width = 2
+line-length = 120
+
+[lint]
+select = ["E", "F"]
+
+ignore = [
+  "F722" # Regex pattern in RegexInput are wrongly interpreted as line breaks
+]
