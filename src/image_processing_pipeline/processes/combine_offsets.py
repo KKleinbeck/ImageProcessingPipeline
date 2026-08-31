@@ -8,19 +8,20 @@ from image_processing_pipeline.framework.process_step import (
 
 class CombineOffsets(AbstractProcessStep):
   inputs = {r"offset_\d+": tuple}
-  deliverables = {"combined_offset": tuple,}
+  deliverables = {
+    "combined_offset": tuple,
+  }
 
   options = {"extra_horizontal": (int, 0), "extra_vertical": (int, 0)}
 
   def _execute(self):
-    """
-    Combines multiple offsets through element-wise addition.
-    """
+    """Combine multiple offsets through element-wise addition."""
     v_offset = self.extra_vertical
     h_offset = self.extra_horizontal
 
     for field_name in self.inputs_actual:
-      if not re.match(r"offset_\d+", field_name): continue
+      if not re.match(r"offset_\d+", field_name):
+        continue
 
       offset = getattr(self, field_name)
       v_offset += offset[0]

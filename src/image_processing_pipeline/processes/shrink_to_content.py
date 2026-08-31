@@ -11,8 +11,9 @@ class ShrinkToContent(AbstractProcessStep):
   deliverables = {"output_stack": np.ndarray, "offset": tuple}
 
   def _execute(self):
-    """
-    Iterates through all images in the input stack and identifies a crop, which shrinks the
+    """Shrinp the input stack to the smallest footprint, that contains all non-zero values.
+
+    Iterate through all images in the input stack and identifies a crop, which shrinks the
     stack to the smallest footprint which contains all non-zero/ non-false values.
 
     Returns the cropped stack and the applied offset (crop width & height implicitly
@@ -28,7 +29,7 @@ class ShrinkToContent(AbstractProcessStep):
     a1_offset, a1_max = a1_nonzero[0], a1_nonzero[-1]
 
     self.offset = (a1_offset, a0_offset)
-    self.output_stack = self.input_stack[:, a1_offset:a1_max+1, a0_offset:a0_max+1]
+    self.output_stack = self.input_stack[:, a1_offset : a1_max + 1, a0_offset : a0_max + 1]
 
 
 process_steps["ShrinkToContent"] = ShrinkToContent

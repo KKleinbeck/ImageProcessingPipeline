@@ -8,22 +8,26 @@ from image_processing_pipeline.framework.process_step import (
 
 
 class GenerateEdgeMask(AbstractProcessStep):
-  inputs = {"input_stack": np.ndarray,}
-  deliverables = {"edge_mask": np.ndarray,}
+  inputs = {
+    "input_stack": np.ndarray,
+  }
+  deliverables = {
+    "edge_mask": np.ndarray,
+  }
 
-  options = {"sigma": (float, 25.)}
+  options = {"sigma": (float, 25.0)}
 
   def _on_set_options(self):
     assert self.sigma > 0, "Sigma must be positive."
 
   def _execute(self):
-    """
-    Generates an edge mask.
+    """Generates an edge mask.
 
     The masks contains True where an edge is detected, False otherwise.
     Parameter sigma defines the kernel width used for the Gaussian Laplace filter.
     """
-    res = nd.gaussian_laplace(self.input_stack, self.sigma, axes=(1,2))
+    res = nd.gaussian_laplace(self.input_stack, self.sigma, axes=(1, 2))
     self.edge_mask = res < 0
+
 
 process_steps["GenerateEdgeMask"] = GenerateEdgeMask

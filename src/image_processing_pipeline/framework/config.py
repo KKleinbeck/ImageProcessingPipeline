@@ -10,7 +10,7 @@ class ExecutionSettings(BaseModel):
   "Display width for the process step counter. `None` enables automatic scaling"
 
 
-class FrameworkConfig(BaseModel):
+class FrameworkSettings(BaseModel):
   data_manager_type: str = "native"
   "Any data manager registered under `image_processing_pipeline.data_manager.data_managers`"
   execution_settings: ExecutionSettings = ExecutionSettings()
@@ -21,18 +21,14 @@ class FrameworkConfig(BaseModel):
   prevent_override: bool = True
   "Prevent overriding previously successful results."
 
-
-  @field_validator('data_manager_type', mode='after')  
+  @field_validator("data_manager_type", mode="after")
   @staticmethod
   def _validate_data_manager_type(data_manager_type: str) -> str:
     if data_manager_type not in data_managers:
-      raise KeyError(
-        f"Unknown data manager '{data_manager_type}'. Available: {', '.join(data_managers.keys())}"
-      )
+      raise KeyError(f"Unknown data manager '{data_manager_type}'. Available: {', '.join(data_managers.keys())}")
     return data_manager_type
-  
 
-  @field_validator('pipeline_settings_name', mode='after')  
+  @field_validator("pipeline_settings_name", mode="after")
   @staticmethod
   def validate_pipeline_settings_name(pipeline_settings_name: str) -> str:
     splits = pipeline_settings_name.rsplit(".", 1)
@@ -40,7 +36,6 @@ class FrameworkConfig(BaseModel):
       return pipeline_settings_name + ".yaml"
     elif splits[1] not in ["json", "yaml"]:
       raise ValueError(
-        "Framework Config Error.\n\t"
-        f"Cannot serialise pipeline to {splits[1]}. Supported is 'json', 'yaml'."
+        f"Framework Config Error.\n\tCannot serialise pipeline to {splits[1]}. Supported is 'json', 'yaml'."
       )
     return pipeline_settings_name

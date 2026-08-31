@@ -8,6 +8,7 @@ import yaml
 
 class AbstractProcessData(ABC):
   def __init__(self, data, name: str):
+    """Create a new serialisable representation of the provided data."""
     self.data: object = data
     self.name = name
 
@@ -27,6 +28,7 @@ class AbstractProcessData(ABC):
     Returns
     -------
     A serialisable object or a string containing the path to the seralised data.
+
     """
     raise NotImplementedError("Subclasses must implement serialise method")
 
@@ -46,13 +48,9 @@ class AbstractProcessData(ABC):
     yaml_path = dir / f"{self.name}.yaml"
     with yaml_path.open("w") as f:
       yaml.safe_dump(
-        {
-          "data": serialised_data,
-          "type": f"{type(self.data).__module__}.{type(self.data).__qualname__}"
-        },
-        f
+        {"data": serialised_data, "type": f"{type(self.data).__module__}.{type(self.data).__qualname__}"}, f
       )
-  
+
   def serialise(self, dir: Path) -> None:
     """Serialise itself.
 
@@ -63,18 +61,19 @@ class AbstractProcessData(ABC):
     ---------
     dir:
       Target directory, which will contain the resulting yaml.
-    
+
     Raises
     ------
     NotADirectoryError
       Provided path is not a directory.
+
     """
     dir.mkdir(parents=True, exist_ok=True)
     if not dir.is_dir():
       raise NotADirectoryError(f"{dir} is not a directory")
 
     self._to_yaml(dir)
-  
+
   @staticmethod
   @abstractmethod
   def load(yaml_file: Path):
@@ -110,42 +109,39 @@ class ProcessTiffData(AbstractProcessData):
   data: np.ndarray
 
   def __init__(self, data: np.ndarray, name: str):
+    """Create a new serialisable representation of the provided data."""
     if not isinstance(data, np.ndarray):
       raise TypeError("ProcessTiffData expects a numpy.ndarray")
     if data.ndim not in (2, 3):
       raise ValueError("ProcessTiffData only supports 2D or 3D numpy arrays")
     super().__init__(data, name)
 
-
   def _serialise(self, dir: Path) -> str:
     """Save the numpy array as a TIFF file."""
     tif_path = dir / f"{self.name}.tif"
     if "int" in str(self.data.dtype):
       int_type = "uint8" if np.max(self.data) < 256 else "uint16"
-      tiff.imwrite(tif_path, self.data.astype(int_type), photometric='minisblack')
+      tiff.imwrite(tif_path, self.data.astype(int_type), photometric="minisblack")
     elif "float" in str(self.data.dtype):
-      tiff.imwrite(tif_path, self.data.astype("float32"), photometric='minisblack')
+      tiff.imwrite(tif_path, self.data.astype("float32"), photometric="minisblack")
     else:
       raise TypeError(
-        f"Cannot serialise result {self.name} of type {self.data.dtype}. " +
-        "Supported are float and int types."
+        f"Cannot serialise result {self.name} of type {self.data.dtype}. " + "Supported are float and int types."
       )
     return str(tif_path)
 
-
   @staticmethod
   def load(yaml_file: Path) -> np.ndarray:
-    """
-    Load TIFF file back into numpy array.
-    """
+    """Load TIFF file back into numpy array."""
     with yaml_file.open("r") as f:
       meta = yaml.safe_load(f)
-    
+
     tif_path = Path(meta["data"])
     return tiff.imread(tif_path)
 
 
 # --- Registry System ---
+
 
 class ProcessDataSerialiser:
   _instance = None
@@ -164,9 +160,7 @@ class ProcessDataSerialiser:
     return self._registry.get(py_type, ProcessData)
 
   def save(self, data: dict, details: dict, output_dir: Path):
-    """
-    Save entries of `data` with a suitable AbstractProcessData wrapper.
-    """
+    """Save entries of `data` with a suitable AbstractProcessData wrapper."""
     target_dir = output_dir / details["RelativeOutputPath"]
     target_dir.mkdir(exist_ok=True, parents=True)
 
@@ -198,6 +192,7 @@ class ProcessDataSerialiser:
     data_cls = getattr(module, class_name)
     wrapper_cls = self.get_data_cls(data_cls)
     return wrapper_cls.load(yaml_file)
+
 
 # --- Register standard mappings ---
 process_data_serialiser = ProcessDataSerialiser()

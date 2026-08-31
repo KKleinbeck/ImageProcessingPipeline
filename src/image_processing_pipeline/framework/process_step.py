@@ -1,4 +1,3 @@
-import annotated_types
 import re
 from abc import ABC, abstractmethod
 from typing import get_args
@@ -6,10 +5,16 @@ from image_processing_pipeline._types import AttributeType, attributes_match
 
 process_steps = {}
 
+
 class AbstractProcessStep(ABC):
   def __init__(
     self, inputs: dict[str, object] = {}, options: dict[str, object] = {}, delivers_id_map: dict[str, str] = {}
   ):
+    """Base class for every ProcessStep.
+
+    Validates the types of the provided inputs and options, and checks that the keys of `delivers_id_map` matches the
+    defined deliverables. For regex based inputs, this generates the actually defined deliverables.
+    """
     # Create copies to avoid modification of class variables
     self.inputs_actual = self._get_defined_attribute(AttributeType.Input)
     self.deliverables_actual = self._get_defined_attribute(AttributeType.Deliverable)
@@ -27,24 +32,21 @@ class AbstractProcessStep(ABC):
 
   def _on_set_inputs(self):
     """Hook for subclasses to react to inputs being set."""
-  
+
   def _on_set_options(self):
     """Hook for subclasses to react to options being set."""
-  
-  def _on_verify_deliverables(self):
-    """Hook for subclasses to react to options being set."""
 
+  def _on_verify_deliverables(self):
+    """Hook for subclasses to react to deliverables being verified."""
 
   def execute(self):
     self._execute()
     self._validate_deliverables()
     return {self.delivers_id_map[d]: getattr(self, d) for d in self.deliverables_actual}
-  
 
   @abstractmethod
   def _execute(self):
     pass
-  
 
   def _get_defined_attribute(self, attribute_id: AttributeType) -> dict[str, type]:
     result: dict[str, type] = {}
@@ -53,7 +55,6 @@ class AbstractProcessStep(ABC):
       if len(type_args) >= 2 and attributes_match(type_args[1]["type"], attribute_id):
         result[attribute] = type_args[0]
     return result
-  
 
   @property
   def _annotated_attributes(self) -> dict[str, object]:
@@ -61,7 +62,6 @@ class AbstractProcessStep(ABC):
     for base in type(self).__bases__:
       annotated_attributes |= base.__annotations__
     return annotated_attributes
-  
 
   # ============================================================
   # MARK: Validators
@@ -76,7 +76,6 @@ class AbstractProcessStep(ABC):
         raise TypeError(
           f"Process {type(self).__name__} - parameter {option} expected type {expected_type}, but got {type(value)}."
         )
-
 
   def _verify_and_add(
     self, reference: dict[str, type], data: dict[str, object], source: AttributeType, extra_okay: bool = False
@@ -95,7 +94,6 @@ class AbstractProcessStep(ABC):
       setattr(self, key, obj)
 
     return {k: data[k] for k in data if k not in reference} if extra_okay else {}
-      
 
   def _verify_ids(
     self, reference: dict[str, type], data_keys: set[str], source: AttributeType, extra_okay: bool = False
@@ -105,20 +103,20 @@ class AbstractProcessStep(ABC):
 
     missing = set[str]() if source == AttributeType.Option else required_keys - data_keys
     extra = data_keys - required_keys
-    
+
     for required_key in missing.copy():
       expected_type, type_metadata = get_args(self._annotated_attributes[required_key])
       if "pattern" not in type_metadata:
-        continue # Regex Matching not possible, error is thrown later
+        continue  # Regex Matching not possible, error is thrown later
       attribute_pattern = type_metadata["pattern"]
-          
+
       for provided_key in extra.copy():
         if re.match(attribute_pattern, provided_key):
           # Register matches and update the dict / sets
           reference.pop(required_key, None)
           reference[provided_key] = expected_type
-          missing.discard(required_key) # `Discard to prevent errors 
-          extra.remove(provided_key) # Explicitly catch double deletion
+          missing.discard(required_key)  # `Discard to prevent errors
+          extra.remove(provided_key)  # Explicitly catch double deletion
 
     # Check exact match
     msg = []
@@ -128,7 +126,6 @@ class AbstractProcessStep(ABC):
       msg.append(f"Unexpected {source.name}: {', '.join(extra)}")
     if msg:
       raise ValueError(f"{type(self).__name__} argument validation failed. " + "; ".join(msg))
-  
 
   def _validate_deliverables(self) -> None:
     """Check that deliverables exist as attributes and match expected types."""
@@ -137,7 +134,4 @@ class AbstractProcessStep(ABC):
         raise AttributeError(f"Deliverable '{key}' is missing as an attribute.")
       val = getattr(self, key)
       if not isinstance(val, expected_type):
-        raise TypeError(
-          f"Deliverable '{key}' must be of type {expected_type.__name__}, "
-          f"got {type(val).__name__}"
-      )
+        raise TypeError(f"Deliverable '{key}' must be of type {expected_type.__name__}, got {type(val).__name__}")

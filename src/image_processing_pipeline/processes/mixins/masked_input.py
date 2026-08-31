@@ -5,9 +5,12 @@ import numpy as np
 from image_processing_pipeline._types import Input, Option
 
 
-class MaskedInputMixin():
+class MaskedInputMixin:
   input_stack: Input[np.ndarray]
+  """Stack of input images."""
   mask_stack: Input[np.ndarray]
+  """Stack of masks. Can be smaller in depth than the input stack, in which case missing masks will be generated
+  according to `mode`."""
 
   mode: Option[str] = "interpolate"
 
@@ -15,18 +18,17 @@ class MaskedInputMixin():
     if self.input_stack.shape[0] <= self.mask_stack.shape[0]:
       raise IndexError("Input stack must have equal or greater depth than mask stack.")
 
-
   def _on_set_options(self):
     if self.input_stack.shape[0] == self.mask_stack.shape[0]:
-      self.mode = "previous" # No interpolation needed
+      self.mode = "previous"  # No interpolation needed
     if self.mode not in {"interpolate", "common_footprint", "previous", "next"}:
       raise ValueError(f"Unknown mode '{self.mode}'. Supported: interpolate, common_footprint, previous, next")
 
-  
   def _get_mask_at_frame(self, frame_idx: int) -> np.ndarray:
     mask_idx = (
-      0 if self.input_stack.shape[0] == 1 else
-      frame_idx * (self.mask_stack.shape[0] - 1) / (self.input_stack.shape[0] - 1)
+      0
+      if self.input_stack.shape[0] == 1
+      else frame_idx * (self.mask_stack.shape[0] - 1) / (self.input_stack.shape[0] - 1)
     )
     lower_idx = int(np.floor(mask_idx))
     upper_idx = int(np.ceil(mask_idx))

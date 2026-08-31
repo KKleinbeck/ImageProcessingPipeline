@@ -59,6 +59,8 @@ are independent of one another and the framework as a whole.
 # Test Design
 Tests use pytests and shall follow common pytest usage patterns.
 Each unit test must pass in under one second. They are stored in tests/unit. Each test here is decorated with `pytest.mark.unit`.
-End to end tests can take as long as they want. They are stored in tests/e2e. Each test here is decorated with `pytest.mark.e2e`/
+End to end tests can take as long as they want. They are stored in tests/e2e. Each test here is decorated with `pytest.mark.e2e`.
 The test data layout follows the layout of the files in the src directory, i.e., each src file shall have one test file in unit and potentially e2e.
-If the a test requires reference data, they shall be sourced from tests/data. Here we follow the same layout, e.g. "tests/data/unit/framework/config" for data used in "tests/unit/framework/test_config.py". 
+If the a test requires reference data, they shall be sourced from tests/data. Here we follow the same layout, e.g. "tests/data/unit/image_processing_pipeline/framework/config" for data used in "tests/unit/image_processing_pipeline/framework/test_config.py".
+
+After writing a new test, assert that it runs by invoking `pixi run pytest -k YOUR_FILE`.

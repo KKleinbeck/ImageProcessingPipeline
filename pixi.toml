@@ -1,10 +1,10 @@
 [package]
 name = "ImageProcessingPipeline"
 
-[package.build]  
+[package.build]
 backend = { name = "pixi-build-python", version = "0.*" }
 
-[package.host-dependencies]  
+[package.host-dependencies]
 hatchling = "*"
 
 [workspace]
@@ -52,3 +52,6 @@ properdocs = ">=1.6.7,<2"
 properdocs-theme-readthedocs = ">=1.6.5, <2"
 mkdocstrings = ">=1.0.6, <2"
 mkdocs-api-autonav = ">=0.4.0, <0.5"
+
+[dependencies]
+pytest = ">=9.1.1,<10"

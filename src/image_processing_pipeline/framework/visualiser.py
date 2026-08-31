@@ -11,9 +11,9 @@ class Visualiser:
       image_stack = image_stack[np.newaxis, ...]
     if image_stack.ndim not in [3, 4]:
       raise ValueError("image_stack must be 2D, 3D (grayscale), or 4D (RGB).")
-    
+
     num_images = image_stack.shape[0]
-    is_rgb = (image_stack.ndim == 4 and image_stack.shape[-1] == 3)
+    is_rgb = image_stack.ndim == 4 and image_stack.shape[-1] == 3
     image_shape = image_stack.shape[1:3]
 
     # Layout
@@ -34,8 +34,8 @@ class Visualiser:
         im = axes[i].imshow(image_stack[i])
       else:
         im = axes[i].imshow(image_stack[i], cmap=cmap)
-      
-      axes[i].set_title(f"Image {i+1}")
+
+      axes[i].set_title(f"Image {i + 1}")
       divider = make_axes_locatable(axes[i])
       cax = divider.append_axes("right", size="5%", pad=0.05)
       if not is_rgb:
@@ -45,14 +45,16 @@ class Visualiser:
 
     # Turn off extra axes if layout grid > num_images
     for i in range(num_images, len(axes)):
-      axes[i].axis('off')
+      axes[i].axis("off")
 
     plt.suptitle(title)
     plt.tight_layout()
     plt.show()
-  
+
   @staticmethod
-  def show_histograms(image_stack: np.ndarray, title: str = "Histograms", bins: int = 100, yscale: str = "log", layout: str = "row"):
+  def show_histograms(
+    image_stack: np.ndarray, title: str = "Histograms", bins: int = 100, yscale: str = "log", layout: str = "row"
+  ) -> None:
     """Display histograms of pixel intensities for each image in the stack."""
     if image_stack.ndim == 1:
       image_stack = image_stack[np.newaxis, np.newaxis, ...]
@@ -60,7 +62,7 @@ class Visualiser:
       image_stack = image_stack[np.newaxis, ...]
     if image_stack.ndim != 3:
       raise ValueError("image_stack must be a 3D numpy array (num_images, height, width), 2D (height, width), or 1D.")
-    
+
     num_images = image_stack.shape[0]
     if layout == "row":
       _fig, axes = plt.subplots(1, num_images, figsize=(4 * num_images, 4))
@@ -75,17 +77,17 @@ class Visualiser:
       axes = axes.flatten()
 
     for i in range(num_images):
-      axes[i].hist(image_stack[i].ravel(), bins=bins, color='blue', alpha=0.7)
-      axes[i].set_title(f"Frame {i+1}")
+      axes[i].hist(image_stack[i].ravel(), bins=bins, color="blue", alpha=0.7)
+      axes[i].set_title(f"Frame {i + 1}")
       axes[i].set_yscale(yscale)
 
-      axes[i].tick_params(axis='x', labelsize=7)
-      axes[i].tick_params(axis='y', labelsize=7)
-      
+      axes[i].tick_params(axis="x", labelsize=7)
+      axes[i].tick_params(axis="y", labelsize=7)
+
       xmax = image_stack[i].max()
 
       # round min down to nearest power-of-10 or to zero
-      xmin_rounded = 0 
+      xmin_rounded = 0
 
       # round max up to nearest 10
       xmax_rounded = int(np.ceil(xmax / 1000) * 1000)
@@ -95,12 +97,10 @@ class Visualiser:
       axes[i].set_xticks([xmin_rounded, xmid_rounded, xmax_rounded])
       axes[i].set_xticklabels([str(xmin_rounded), str(xmid_rounded), str(xmax_rounded)])
 
-
-
     for i in range(num_images, len(axes)):
-      axes[i].axis('off')
+      axes[i].axis("off")
 
-     # Increase space between subplots
+    # Increase space between subplots
     plt.subplots_adjust(wspace=0.4, hspace=0.4)
 
     plt.suptitle(title)
