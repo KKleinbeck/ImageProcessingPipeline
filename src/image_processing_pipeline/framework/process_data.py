@@ -1,3 +1,8 @@
+"""Implementation of the `AbstractProcessData` and `ProcessData` classes.
+
+This module also contains the `ProcessDataSerialiser`, relevant for data serialisation at the end of the Pipeline run.
+"""
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 

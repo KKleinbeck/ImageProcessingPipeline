@@ -1,3 +1,5 @@
+"""Implementation of the abstract ProcessStep interface class."""
+
 import re
 from abc import ABC, abstractmethod
 from typing import get_args
