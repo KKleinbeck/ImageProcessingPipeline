@@ -110,15 +110,6 @@ def test_registered_results_returns_all_keys(empty_manager):
 
 
 @pytest.mark.unit
-def test_serialize_method_is_idempotent():
-  """Calling serialize() must not raise and must return None."""
-  dm = DataManager()
-  # Even after populating some data, serialization should be a no‑op.
-  dm.register("test", "value")
-  assert dm.serialize() is None
-
-
-@pytest.mark.unit
 def test_get_returns_deepcopy_not_same_object(empty_manager):
   """The object returned by get must be a deep copy, not the original stored reference."""
   original_list = [1, 2, {"inner": "obj"}]

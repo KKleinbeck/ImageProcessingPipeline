@@ -30,7 +30,7 @@ class FrameworkSettings(BaseModel):
 
   @field_validator("pipeline_settings_name", mode="after")
   @staticmethod
-  def validate_pipeline_settings_name(pipeline_settings_name: str) -> str:
+  def _validate_pipeline_settings_name(pipeline_settings_name: str) -> str:
     splits = pipeline_settings_name.rsplit(".", 1)
     if len(splits) == 1:
       return pipeline_settings_name + ".yaml"

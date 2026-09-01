@@ -150,8 +150,5 @@ class DataManager:
       raise KeyError(f"Data with id {id} already exists.")
     self._results[id] = data
 
-  def serialize(self):
-    pass
-
 
 data_managers["native"] = DataManager

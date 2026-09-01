@@ -77,6 +77,12 @@ class AbstractProcessData(ABC):
   @staticmethod
   @abstractmethod
   def load(yaml_file: Path):
+    """Load serialised data from the provided path.
+
+    Parameter
+    ---------
+    yaml_file: Path to the yaml representation of the data.
+    """
     raise NotImplementedError("Subclasses must implement load method")
 
 
@@ -148,15 +154,18 @@ class ProcessDataSerialiser:
   _registry: dict[type, type[AbstractProcessData]]
 
   def __new__(cls):
+    """Provide the singleton instance of `ProcessDataSerialiser`."""
     if cls._instance is None:
       cls._instance = super().__new__(cls)
       cls._instance._registry = {}
     return cls._instance
 
   def register(self, py_type: type, data_cls: type[AbstractProcessData]):
+    """Register a `ProcessData` realisation for the type `py_type`."""
     self._registry[py_type] = data_cls
 
   def get_data_cls(self, py_type: type):
+    """Get the `ProcessData` realisation registered for `py_type`."""
     return self._registry.get(py_type, ProcessData)
 
   def save(self, data: dict, details: dict, output_dir: Path):

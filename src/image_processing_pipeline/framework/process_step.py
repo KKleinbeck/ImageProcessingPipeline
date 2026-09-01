@@ -39,7 +39,16 @@ class AbstractProcessStep(ABC):
   def _on_verify_deliverables(self):
     """Hook for subclasses to react to deliverables being verified."""
 
-  def execute(self):
+  def execute(self) -> dict[str, object]:
+    """Run the process step.
+
+    This calls the internal `_execute` method of, then valides the produced deliverables.
+
+    Returns
+    -------
+    Dictionary mapping the deliverable keys, as defined in the pipeline config, to the result.
+
+    """
     self._execute()
     self._validate_deliverables()
     return {self.delivers_id_map[d]: getattr(self, d) for d in self.deliverables_actual}

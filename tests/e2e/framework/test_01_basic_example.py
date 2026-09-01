@@ -60,6 +60,7 @@ def test_custom_settings(working_directory):
 
   output_contents = set(file.name for file in output_path.iterdir())
   assert output_contents == set(("custom_name.yaml", "MyNumberPlus3.yaml"))
+  assert pp.serialisation_path.name == "custom_name.yaml"
 
   with open(output_path / "custom_name.yaml") as fp:
     serialised_framework_settings = yaml.safe_load(fp)
