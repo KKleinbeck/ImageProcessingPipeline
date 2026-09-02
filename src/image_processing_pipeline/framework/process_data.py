@@ -25,8 +25,8 @@ class AbstractProcessData(ABC):
     - return `self.data` directly if it is already serialisable, or
     - implement a custom serialisation routine (e.g. save to a file) and return the path to the serialised data.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     dir:
       Target directory for the resulting files.
 
@@ -44,10 +44,11 @@ class AbstractProcessData(ABC):
       - data: the serialised data or path
       - type: the fully qualified type name of the original data
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     dir:
       Target directory for the resulting files.
+
     """
     serialised_data = self._serialise(dir)
     yaml_path = dir / f"{self.name}.yaml"
@@ -62,8 +63,8 @@ class AbstractProcessData(ABC):
     If provided directory does not exists it will be created. Then create a yaml file that either contains the
     serialised data or a path to the actual serialised object, e.g. a tiff files when this represents an image.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     dir:
       Target directory, which will contain the resulting yaml.
 
@@ -81,12 +82,18 @@ class AbstractProcessData(ABC):
 
   @staticmethod
   @abstractmethod
-  def load(yaml_file: Path):
+  def load(yaml_file: Path) -> object:
     """Load serialised data from the provided path.
 
-    Parameter
-    ---------
-    yaml_file: Path to the yaml representation of the data.
+    Parameters
+    ----------
+    yaml_file:
+      Path to the yaml representation of the data.
+
+    Returns
+    -------
+    The loaded process data.
+
     """
     raise NotImplementedError("Subclasses must implement load method")
 
@@ -101,7 +108,6 @@ class ProcessData(CollectableProcessData):
 
   @staticmethod
   def load(yaml_file: Path) -> object:
-    """Load data from a yaml file, casting it to the stored type."""
     with yaml_file.open("r") as f:
       meta = yaml.safe_load(f)
 

@@ -24,8 +24,8 @@ class DataManager:
   def contains(self, id: str) -> bool:
     """Return whether provided id exisits in registry.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     id:
       ID / name that is searched in the registry.
 
@@ -39,8 +39,8 @@ class DataManager:
   def get(self, id: str) -> object:
     """Return data stored under the provided ID.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     id:
       ID / name that is searched in the registry.
 
@@ -75,8 +75,8 @@ class DataManager:
     of string values. If `id` is a string, then store `data` under the provided string ID.
     If `id` is a dictionary, store every value under the provided key.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     id:
       ID / name under which the data is stored or a dictonary of IDs and data.
     data:
@@ -106,8 +106,8 @@ class DataManager:
 
     Registeres the values under their string keys.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     data_dict:
       Dictionary of the data being registered.
 
@@ -131,8 +131,8 @@ class DataManager:
     New realisations of `DataManager` that do not which to store the data in RAM shall
     override this method.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     id:
       ID / name under which the data is stored or a dictonary of IDs and data
     data:

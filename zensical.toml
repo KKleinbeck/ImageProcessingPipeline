@@ -1,0 +1,29 @@
+[project]
+site_name = "ImageProcessingPipeline Documentation"
+repo_url = "http://TODO"
+docs_dir = "docs/src"
+site_dir = "docs/build"
+
+[project.theme]
+variant = "modern"
+
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+inventories = ["https://docs.python.org/3/objects.inv"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_section_style = "list"
+docstring_style = "numpy"
+filters = []  # ["!^_"] # uncomment to exclude private members
+heading_level = 1
+merge_init_into_class = true
+parameter_headings = true
+separate_signature = true
+show_root_heading = true
+show_signature_annotations = true
+show_symbol_type_heading = true
+show_symbol_type_toc = true
+summary = true
+
+[project.plugins.mkdocstrings.handlers.python.module_options."image_processing_pipeline"]
+docstring_style = "numpy"
