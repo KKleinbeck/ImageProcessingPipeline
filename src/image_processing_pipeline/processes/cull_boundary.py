@@ -5,13 +5,30 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 class CullBoundary(AbstractProcessStep):
-  inputs = {
-    "input_stack": np.ndarray,
-  }
-  deliverables = {"culled_stack": np.ndarray, "former_image_shape": tuple, "culled_image_offset": tuple}
+  """Binerises the image stack based on a threshold.
+  
+    Assume input is normalised to [0,1]. For this every pixel value below the threshold
+    is set to 0, every pixel value above or equal to the threshold is set to 1.
+    
+    """ #########DOES THIS REALLY DO THIS ? DOESN'T IT CROP THE IMAGE ??
 
+  input_stack: Input[np.ndarray]
+  
+  culled_stack: Deliverable[np.ndarray]
+  former_image_shape: Deliverable[tuple]
+  culled_image_offset: Deliverable[tuple]
+  
+  top: Option[int,float] = 0
+  bottom: Option[int,float] = 0
+  left: Option[int,float] = 0
+  right: Option[int,float] = 0
+  width: Option[int,float] = 0
+  height: Option[int | float] = 0 ###################WHY IS THIS ONE DIFFERENT TO THE OTHERS
+  offset: Option[tuple | None, None]
+  
   options = {
     "top": ((int, float), 0),
     "bottom": ((int, float), 0),
@@ -88,11 +105,6 @@ class CullBoundary(AbstractProcessStep):
       )
 
   def _execute(self):
-    """Binerises the image stack based on a threshold.
-
-    Assume input is normalised to [0,1]. For this every pixel value below the threshold
-    is set to 0, every pixel value above or equal to the threshold is set to 1.
-    """
     top, bottom = self.top, self.bottom
     left, right = self.left, self.right
 

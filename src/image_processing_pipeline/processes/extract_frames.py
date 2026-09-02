@@ -5,14 +5,20 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 class ExtractFrames(AbstractProcessStep):
-  inputs = {"input_stack": np.ndarray}
-  deliverables = {
-    "extracted_frames": np.ndarray,
-  }
+  """Extract a set of frames from the input stack."""
+  
+  input_stack: Input[np.ndarray]
+  '''A stack of tiff file/s'''
+  
+  extracted_frames: Deliverable[np.ndarray]
+  '''Tiff image/stack of frames that were extracted'''
+  
+  frames = Option[list] = [0]
+  '''List of frames to be extracted'''
 
-  options = {"frames": (list, [0])}
 
   def _on_set_options(self):
     n_frames = self.input_stack.shape[0]
@@ -26,7 +32,6 @@ class ExtractFrames(AbstractProcessStep):
     )
 
   def _execute(self):
-    """Extract a set of frames from the input stack."""
     self.extracted_frames = self.input_stack[self.frames, :, :]
 
 

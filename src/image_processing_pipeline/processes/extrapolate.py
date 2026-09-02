@@ -11,16 +11,16 @@ from image_processing_pipeline._types import Input, Deliverable
 class Extrapolate(AbstractProcessStep):
   """Extrapolate input stack a the beginning and end.
 
-  Scans the input stack for missing frames (e.g. every pixel has a 0 value)
-  at the beginning and end and extrapolates these frames according by the closest
+  Scans the input stack for frames that have no generated mask (e.g. every pixel has a 0 value)
+  at the beginning or end and extrapolates these frames according to the closest
   frame.
   """
 
   input_stack: Input[np.ndarray]
-  """Input stack of images with potentially missing frames at the beginning and end."""
+  """Stack of 0/1 masks, with potentially missing masks at the beginning or end."""
 
   extrapolated_stack: Deliverable[np.ndarray]
-  """Stack with extrapolated frames at the beginning and end."""
+  """Processed 0/1 mask stack. If frames at the beginning/end were initially blank, they now contain an extrapolated 0/1 masks."""
   extrapolated_frames: Deliverable[list]
   """List of booleans, indicating which frame have been extrapolated."""
 

@@ -5,12 +5,20 @@ from image_processing_pipeline.framework.process_step import (
   AbstractProcessStep,
   process_steps,
 )
-
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 class GeometryFilterMasks(AbstractProcessStep):
-  inputs = {
-    "input_stack": np.ndarray,
-  }
+  """Applies geometric filtering to connected components in the input binary mask stack.
+  
+      For each connected component in each slice of the input stack, the following criteria are checked:
+      - Aspect Ratio: The ratio of width to height (dx/dy) and height to width (dy/dx) must be above specified minimums.
+      - Area: The area (width * height) must be within specified minimum and maximum bounds.
+      - Size: The width (dx) and height (dy) must be within specified minimum and maximum bounds.
+      """
+  
+  input_stack: Input[np.ndarray]
+  """A 0/1 mask stack"""
+    
   deliverables = {
     "filtered_mask_stack": np.ndarray,
   }
@@ -27,13 +35,7 @@ class GeometryFilterMasks(AbstractProcessStep):
   }
 
   def _execute(self):
-    """Applies geometric filtering to connected components in the input binary mask stack.
-
-    For each connected component in each slice of the input stack, the following criteria are checked:
-    - Aspect Ratio: The ratio of width to height (dx/dy) and height to width (dy/dx) must be above specified minimums.
-    - Area: The area (width * height) must be within specified minimum and maximum bounds.
-    - Size: The width (dx) and height (dy) must be within specified minimum and maximum bounds.
-    """
+    
     for n in range(self.input_stack.shape[0]):
       labelled, _ = nd.label(self.input_stack[n, :, :])
       for indices in nd.value_indices(labelled).values():

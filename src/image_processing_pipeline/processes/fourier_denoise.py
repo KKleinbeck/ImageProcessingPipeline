@@ -5,6 +5,7 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 class FourierDenoise(AbstractProcessStep):
   """Suppress small Fourier amplitudes.
@@ -13,11 +14,13 @@ class FourierDenoise(AbstractProcessStep):
   `denoise_level * max(abs(amplitudes))` to 0.
   Finally transforms back to real space and delivers the result stack.
   """
+  
+  input_stack: Input[np.ndarray]
+  """Stack of 0/1 masks, with potentially missing masks at the beginning or end.""" ########OR A TIFF STACK
 
-  inputs = {"input_stack": np.ndarray}
-  deliverables = {
-    "denoised_stack": np.ndarray,
-  }
+  denoised_stack: Deliverable[np.ndarray]
+  
+  denoise_level: Option[float] = 1.0
 
   options = {"denoise_level": (float, 1.0)}
 
