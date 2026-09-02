@@ -9,7 +9,7 @@ Visualise image results via the `Visualiser` class.
 
 from importlib.metadata import PackageNotFoundError, version
 
-from image_processing_pipeline.framework.config import FrameworkSettings
+from image_processing_pipeline.framework.framework_settings import FrameworkSettings
 from image_processing_pipeline.framework.process_pipeline import ProcessPipeline
 from image_processing_pipeline.framework.visualiser import Visualiser
 

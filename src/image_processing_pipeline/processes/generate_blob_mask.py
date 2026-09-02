@@ -70,7 +70,6 @@ class GenerateBlobMask(AbstractProcessStep):
 
   @staticmethod
   def segment_frame_simple(orig_frame, roi, core, halo_max_px, halo_intensity_factor):
-
     # Distance from core
     dist = cv2.distanceTransform((~core).astype(np.uint8), cv2.DIST_L2, 3)
 

@@ -9,7 +9,7 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, ConfigDict, field_validator
 
-from image_processing_pipeline.framework.config import FrameworkSettings
+from image_processing_pipeline.framework.framework_settings import FrameworkSettings
 from image_processing_pipeline.framework.data_manager import data_managers
 from image_processing_pipeline.framework.process_data import ProcessDataSerialiser
 from image_processing_pipeline.framework.process_step import process_steps
@@ -133,7 +133,16 @@ class ProcessPipeline(BaseModel):
     # Only on success serialise it's own state
     self.serialise()
 
-  def serialise(self):
+  def serialise(self) -> None:
+    """Write itself to yaml or json file at `serialisation_path`.
+
+    Raises
+    ------
+    NameError
+      If `serialisation_path` (defined through Frameworksettings(pipeline_settings_name=...)) does not target a json or
+      yaml file.
+
+    """
     standard_fields = set(type(self).model_fields.keys())
 
     self_representation = self.model_dump(include=standard_fields, mode="json")
@@ -151,6 +160,13 @@ class ProcessPipeline(BaseModel):
 
   @property
   def serialisation_path(self) -> Path:
+    """Universal path for the serialisation result.
+
+    Returns
+    -------
+    Path to the serialiased pipeline settings.
+
+    """
     return self.output_dir / self.framework_settings.pipeline_settings_name
 
   # ============================================================

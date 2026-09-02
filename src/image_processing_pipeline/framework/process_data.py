@@ -1,3 +1,8 @@
+"""Implementation of the `AbstractProcessData` and `ProcessData` classes.
+
+This module also contains the `ProcessDataSerialiser`, relevant for data serialisation at the end of the Pipeline run.
+"""
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -20,8 +25,8 @@ class AbstractProcessData(ABC):
     - return `self.data` directly if it is already serialisable, or
     - implement a custom serialisation routine (e.g. save to a file) and return the path to the serialised data.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     dir:
       Target directory for the resulting files.
 
@@ -39,10 +44,11 @@ class AbstractProcessData(ABC):
       - data: the serialised data or path
       - type: the fully qualified type name of the original data
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     dir:
       Target directory for the resulting files.
+
     """
     serialised_data = self._serialise(dir)
     yaml_path = dir / f"{self.name}.yaml"
@@ -57,8 +63,8 @@ class AbstractProcessData(ABC):
     If provided directory does not exists it will be created. Then create a yaml file that either contains the
     serialised data or a path to the actual serialised object, e.g. a tiff files when this represents an image.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     dir:
       Target directory, which will contain the resulting yaml.
 
@@ -76,7 +82,19 @@ class AbstractProcessData(ABC):
 
   @staticmethod
   @abstractmethod
-  def load(yaml_file: Path):
+  def load(yaml_file: Path) -> object:
+    """Load serialised data from the provided path.
+
+    Parameters
+    ----------
+    yaml_file:
+      Path to the yaml representation of the data.
+
+    Returns
+    -------
+    The loaded process data.
+
+    """
     raise NotImplementedError("Subclasses must implement load method")
 
 
@@ -90,7 +108,6 @@ class ProcessData(CollectableProcessData):
 
   @staticmethod
   def load(yaml_file: Path) -> object:
-    """Load data from a yaml file, casting it to the stored type."""
     with yaml_file.open("r") as f:
       meta = yaml.safe_load(f)
 
@@ -148,15 +165,18 @@ class ProcessDataSerialiser:
   _registry: dict[type, type[AbstractProcessData]]
 
   def __new__(cls):
+    """Provide the singleton instance of `ProcessDataSerialiser`."""
     if cls._instance is None:
       cls._instance = super().__new__(cls)
       cls._instance._registry = {}
     return cls._instance
 
   def register(self, py_type: type, data_cls: type[AbstractProcessData]):
+    """Register a `ProcessData` realisation for the type `py_type`."""
     self._registry[py_type] = data_cls
 
   def get_data_cls(self, py_type: type):
+    """Get the `ProcessData` realisation registered for `py_type`."""
     return self._registry.get(py_type, ProcessData)
 
   def save(self, data: dict, details: dict, output_dir: Path):

@@ -7,11 +7,12 @@ select = ["E", "F", "NPY", "W", "D"]
 
 ignore = [
   "F722", # Regex pattern in RegexInput are wrongly interpreted as line breaks
-  "D100", "D101", "D102", # TODO: Make these mandatory
+  "D101", "D102", # TODO: Make these mandatory
   "D401", # I do not want imperative mood as required
   "D203", # Clashes with D111 and is ignored by default
   "D213", # Clashes with D212 and is ignored by default
 ]
 
 [lint.per-file-ignores]
+"src/image_processing_pipeline/processes/**" = ["D100"]  # TODO: Make this mandatory
 "tests/**" = ["D"]  # Docstrings not required for tests

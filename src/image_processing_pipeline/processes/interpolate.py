@@ -23,7 +23,18 @@ class Interpolate(AbstractProcessStep):
         "Mode 'common_footprint' requires input_stack to have only 0 & 1 or binary values."
       )
 
-  def interpolate(self, i: int, s: int, e: int) -> None:
+  def _interpolate(self, i: int, s: int, e: int) -> None:
+    """Generate interpolated result at given index.
+
+    Fills the interpolated stack at index `i` by interpolating the with values of the
+    input stack at index `s` (start) and `e` (end), depending on the mode.
+    - `mode == "interpolate"`: Takes the values of the input stack at index `s` and `e` and weights them according to
+      their distance to `i` for the interpolation.
+    - `mode == "previous"`: Fills the interpolated stack with the value of the input stack at index `s`.
+    - `mode == "next"`: Fills the interpolated stack with the value of the input stack at index `e`.
+    - `mode == "common_footprint"`: Only for mask inputs. Fills the interpolated stack with overlap of the masks at
+      index `s` and `e`.
+    """
     match self.mode:
       case "interpolate":
         w1 = (i - s + 1) / (e - s + 2)
@@ -71,7 +82,7 @@ class Interpolate(AbstractProcessStep):
       self.interpolated_stack = self.interpolated_stack.astype("float32")
     for s, e in zip(starts, ends):
       for i in range(s, e + 1):
-        self.interpolate(i, s, e)
+        self._interpolate(i, s, e)
     self.interpolated_frames = self.interpolated_frames.tolist()  # To support serialisation
 
 
