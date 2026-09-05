@@ -19,9 +19,7 @@
 </details>
 
 ## TODO:
-- Docs
-- Tests
 - ProcessSteps
   - Refactor Inheritance chains by using mixins
+  - Improve upon star fill
   - Introduce local variance filter
-- Setup Precommits
