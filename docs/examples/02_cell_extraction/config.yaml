@@ -1,0 +1,24 @@
+Inputs:
+ - input_image_path 
+
+
+PipelineSteps:
+  # Preprocessing for the masks
+  - DisplayId: Load Input Image
+    ProcessStep: LoadStack
+    Inputs:
+      input_path: input_image_path
+    Deliverables:
+      loaded_stack: input_image
+  - DisplayId: Analyse local bariance
+    ProcessStep: LocalVariance
+    Inputs:
+      input_stack: input_image
+    Deliverables:
+      local_variance_stack: local_variance
+
+
+Serialisations:
+ - RelativeOutputPath: .
+   Data:
+    - local_variance

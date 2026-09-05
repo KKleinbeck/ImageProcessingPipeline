@@ -649,13 +649,17 @@ def generate_noise(config: SampleDataConfig) -> np.ndarray:
   return config.noise_config.amplitude * (noise - np.min(noise))
 
 
-def generate_sample_frame(config: SampleDataConfig):
+def generate_sample_frame(config: SampleDataConfig) -> np.ndarray:
   """Generate a single random frame with a cell.
 
   Parameters
   ----------
   config
     Configuration for the data generation
+
+  Returns
+  -------
+  The resulting image frame in form of a 2d numpy array.
 
   """
   frame = np.zeros(config.frame_size)

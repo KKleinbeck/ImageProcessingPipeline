@@ -1,38 +1,33 @@
-import numpy as np
-
-from image_processing_pipeline.framework.process_step import (
-  AbstractProcessStep,
-  process_steps,
-)
+from image_processing_pipeline._types import Option, Deliverable
 
 
-class CullBoundary(AbstractProcessStep):  # Shall import the CullingMixin
-  inputs = {
-    "input_stack": np.ndarray,
-  }
-  deliverables = {"culled_stack": np.ndarray, "former_image_shape": tuple, "culled_image_offset": tuple}
+class CullingMixin:
+  top: Option[int | float] = 0
+  "Cull frame from the top. Incompatible with options `height` and `offset`."
+  bottom: Option[int | float | None] = None
+  "Cull image from the bottom. Incompatible with option `height`"
+  left: Option[int | float] = 0
+  "Cull frame from the left. Incompatible with options `width` and `offset`."
+  right: Option[int | float | None] = None
+  "Cull frame from the right. Incompatible with option `width`."
+  width: Option[int | float] = 0
+  "Cull frame to given width. Incompatible with setting both `left` and `right`."
+  height: Option[int | float] = 0
+  "Cull frame to given height. Incompatible with setting both `top` and `bottom`."
+  offset: Option[tuple | None] = None
+  "Cull image at given offset (i.e., tuple of top and left cull). Incompatible with setting options `left` and `top`."
 
-  options = {
-    "top": ((int, float), 0),
-    "bottom": ((int, float), 0),
-    "left": ((int, float), 0),
-    "right": ((int, float), 0),
-    "width": ((int, float), 0),
-    "height": (int | float, 0),
-    "offset": (tuple | None, None),
-  }
-
-  def _on_set_inputs(self):
-    self.former_image_shape = self.input_stack.shape[1:]
+  former_image_shape: Deliverable[tuple]
+  "Shape of the frames prior to culling."
 
   def _on_set_options(self):
     # Guarantee: Left, right, top, bottom parameters are in the correct format.
     for option in ["left", "right", "top", "bottom"]:
       value = getattr(self, option)
-      max_pixel_size = self.former_image_shape[1 if option in ["left", "right"] else 0]
 
       if isinstance(value, float):
         assert 0 <= value < 1.0, f"Float option {option} must be in [0, 1.0) range."
+        max_pixel_size = self.former_image_shape[1 if option in ["left", "right"] else 0]
         pixel_value = int(value * max_pixel_size)
         setattr(self, option, pixel_value)
       else:
@@ -81,23 +76,11 @@ class CullBoundary(AbstractProcessStep):  # Shall import the CullingMixin
         self.top = self.former_image_shape[0] - self.bottom - self.height
 
     # Guarantee: Culling parameters lie within the image
-    if self.top + self.bottom >= self.former_image_shape[0] or self.left + self.right >= self.former_image_shape[1]:
+    if (
+      self.top + (self.bottom or 0) >= self.former_image_shape[0]
+      or self.left + (self.right or 0) >= self.former_image_shape[1]
+    ):
       raise ValueError(
         f"Culling options too large for image size {self.former_image_shape}: "
         f"top {self.top}, bottom {self.bottom}, left {self.left}, right {self.right}."
       )
-
-  def _execute(self):
-    """Binerises the image stack based on a threshold.
-
-    Assume input is normalised to [0,1]. For this every pixel value below the threshold
-    is set to 0, every pixel value above or equal to the threshold is set to 1.
-    """
-    top, bottom = self.top, self.bottom
-    left, right = self.left, self.right
-
-    self.culled_stack = self.input_stack[:, top:-bottom, left:-right]
-    self.culled_image_offset = (top, left)
-
-
-process_steps["CullBoundary"] = CullBoundary
