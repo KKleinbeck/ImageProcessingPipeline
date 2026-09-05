@@ -4,15 +4,38 @@ from image_processing_pipeline.framework.process_step import (
   AbstractProcessStep,
   process_steps,
 )
-
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 class Interpolate(AbstractProcessStep):
-  inputs = {
-    "input_stack": np.ndarray,
-  }
-  deliverables = {"interpolated_stack": np.ndarray, "interpolated_frames": list}
+  """Generate interpolated result at given index.
+  
+      Fills the interpolated stack at index `i` by interpolating the with values of the
+      input stack at index `s` (start) and `e` (end), depending on the mode.
+      - `mode == "interpolate"`: Takes the values of the input stack at index `s` and `e` and weights them according to
+        their distance to `i` for the interpolation.
+      - `mode == "previous"`: Fills the interpolated stack with the value of the input stack at index `s`.
+      - `mode == "next"`: Fills the interpolated stack with the value of the input stack at index `e`.
+      - `mode == "common_footprint"`: Only for mask inputs. Fills the interpolated stack with overlap of the masks at
+        index `s` and `e`.
+      """
+ 
+  input_stack: Input[np.ndarray]
+  """Stack of 0/1 masks, with potentially missing masks in the middle"""
+  
+  interpolated_stack: Deliverable[np.ndarray]
+  """Processed 0/1 mask stack. If frames in the middle were initially blank, they now contain interpolated 0/1 masks."""
+  interpolated_frames: Deliverable[list]
+  """List of booleans, indicating which frames have been interpolated."""
 
-  options = {"mode": (str, "common_footprint")}
+  mode: Option[str] = "common_footprint"
+  """Different modes for interpolation.
+      - "interpolate"`: Takes the values of the input stack at index `s` and `e` and weights them according to
+        their distance to `i` for the interpolation.
+      -"previous"`: Fills the interpolated stack with the value of the input stack at index `s`.
+      -"next"`: Fills the interpolated stack with the value of the input stack at index `e`.
+      - "common_footprint"`: Only for mask inputs. Fills the interpolated stack with overlap of the masks at
+        index `s` and `e`."""
+  
 
   def _on_set_options(self):
     if self.mode not in {"interpolate", "common_footprint", "previous", "next"}:
@@ -24,17 +47,7 @@ class Interpolate(AbstractProcessStep):
       )
 
   def _interpolate(self, i: int, s: int, e: int) -> None:
-    """Generate interpolated result at given index.
-
-    Fills the interpolated stack at index `i` by interpolating the with values of the
-    input stack at index `s` (start) and `e` (end), depending on the mode.
-    - `mode == "interpolate"`: Takes the values of the input stack at index `s` and `e` and weights them according to
-      their distance to `i` for the interpolation.
-    - `mode == "previous"`: Fills the interpolated stack with the value of the input stack at index `s`.
-    - `mode == "next"`: Fills the interpolated stack with the value of the input stack at index `e`.
-    - `mode == "common_footprint"`: Only for mask inputs. Fills the interpolated stack with overlap of the masks at
-      index `s` and `e`.
-    """
+    
     match self.mode:
       case "interpolate":
         w1 = (i - s + 1) / (e - s + 2)
@@ -48,19 +61,6 @@ class Interpolate(AbstractProcessStep):
         self.interpolated_stack[i, :] = self.input_stack[s - 1, :] * self.input_stack[e + 1, :]
 
   def _execute(self):
-    """Interpolate missing frames in the input stack.
-
-    Scans the input stack for missing frames (e.g. every pixel has a 0 value)
-    and interpolates these frames according to the given mode. Supported modes:
-    - interpolate: Interpolates with weights according to the index distance to
-      the next valid frames.
-    - previous/next: Replaces missing frames by the last/ next valid frame.
-    - common_footprint: Replaces the missing frames by the common_footprint of the
-      surronding valid frames. This requires them to only consist of 0 and 1 values
-
-    Missing frames at the very beginning and end of the stack are ignored and no
-    extrapolation attempts are performed.
-    """
     # Find missing frames
     missing_frames = np.any(self.input_stack, axis=(1, 2))
     first_valid_frame = np.argmax(missing_frames)

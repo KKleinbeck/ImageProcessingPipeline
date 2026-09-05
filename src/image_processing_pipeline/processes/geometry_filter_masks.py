@@ -14,28 +14,33 @@ class GeometryFilterMasks(AbstractProcessStep):
       - Aspect Ratio: The ratio of width to height (dx/dy) and height to width (dy/dx) must be above specified minimums.
       - Area: The area (width * height) must be within specified minimum and maximum bounds.
       - Size: The width (dx) and height (dy) must be within specified minimum and maximum bounds.
-      """
+   """
   
   input_stack: Input[np.ndarray]
-  """A 0/1 mask stack"""
-    
-  deliverables = {
-    "filtered_mask_stack": np.ndarray,
-  }
+  """A 0/1 mask stack which contains a variety of regions of interest (1s)"""
+  
+  filtered_mask_stack: Deliverable[np.ndarray]  
+  """A 0/1 mask stack which contains only regions of interest that meet the inputted requirements"""
+  
+  min_aspect_dx_dy: Option[float] = 0.0
+  """Minimum aspect ratio value of width to height (dx/dy)"""
+  min_aspect_dy_dx: Option[float] = 0.0
+  """Minimum aspect ratio value of height to width (dy/dx)"""
+  min_area: Option[float] = 0.0
+  """Minimum value for area in pixels"""
+  max_area: Option[float] = np.inf
+  """Maximum value for area in pixels"""
+  min_size_dx: Option[float] = 0.0
+  """Minimum value in pixels for the width along the x-axis"""
+  max_size_dx: Option[float] = np.inf
+  """Maximum value in pixels for the width along the x-axis"""
+  min_size_dy: Option[float] = 0.0
+  """Minimum value in pixels for the height along the y-axis"""
+  max_size_dy: Option[float] = np.inf
+  """Maximum value in pixels for the height along the y-axis"""
 
-  options = {
-    "min_aspect_dx_dy": (float, 0.0),
-    "min_aspect_dy_dx": (float, 0.0),
-    "min_area": (float, 0.0),
-    "max_area": (float, np.inf),
-    "min_size_dx": (float, 0.0),
-    "max_size_dx": (float, np.inf),
-    "min_size_dy": (float, 0.0),
-    "max_size_dy": (float, np.inf),
-  }
 
   def _execute(self):
-    
     for n in range(self.input_stack.shape[0]):
       labelled, _ = nd.label(self.input_stack[n, :, :])
       for indices in nd.value_indices(labelled).values():

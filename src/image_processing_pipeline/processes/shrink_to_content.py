@@ -4,7 +4,7 @@ from image_processing_pipeline.framework.process_step import (
   AbstractProcessStep,
   process_steps,
 )
-
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 class ShrinkToContent(AbstractProcessStep):
   inputs = {"input_stack": np.ndarray}

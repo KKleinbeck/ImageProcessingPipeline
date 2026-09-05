@@ -5,7 +5,7 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
-
+from image_processing_pipeline._types import Input, Deliverable, Option
 class RemoveZeroPixels(AbstractProcessStep):
   inputs = {
     "input_stack": np.ndarray,
