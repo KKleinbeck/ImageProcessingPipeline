@@ -18,6 +18,7 @@ from image_processing_pipeline.processes.geometry_filter_masks import GeometryFi
 from image_processing_pipeline.processes.interpolate import Interpolate
 from image_processing_pipeline.processes.invert import Invert
 from image_processing_pipeline.processes.load_stack import LoadStack
+from image_processing_pipeline.processes.local_variance import LocalVariance
 from image_processing_pipeline.processes.median_filter import MedianFilter
 from image_processing_pipeline.processes.normalise import Normalise
 from image_processing_pipeline.processes.number_adder import NumberAdder
@@ -48,6 +49,7 @@ __all__ = [
   "Interpolate",
   "Invert",
   "LoadStack",
+  "LocalVariance",
   "MedianFilter",
   "Normalise",
   "NumberAdder",
@@ -56,5 +58,5 @@ __all__ = [
   "ShrinkToContent",
   "StarFill",
   "ThresholdBinarise",
-  "VisualiseBlobMask"
+  "VisualiseBlobMask",
 ]

@@ -6,14 +6,15 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import Input, Deliverable, Option
+
 
 class ApplyMorphologies(AbstractProcessStep):
-  inputs = {"input_stack": np.ndarray}
-  deliverables = {
-    "morphed_stack": np.ndarray,
-  }
+  input_stack: Input[np.ndarray]
 
-  options = {"strategy": (dict, {"binary_erosion": {"iterations": 1}})}
+  morphed_stack: Deliverable[np.ndarray]
+
+  strategy: Option[dict] = {"binary_erosion": {"iterations": 1}}
 
   def _execute(self):
     """Apply morphological operations to the input stack according to the specified strategy."""

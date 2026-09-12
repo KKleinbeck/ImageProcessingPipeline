@@ -5,10 +5,13 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
-from image_processing_pipeline._types import Input, Deliverable, Option
+from image_processing_pipeline._types import Input, Deliverable
+
+
 class StarFill(AbstractProcessStep):
-  inputs = {"input_mask": np.ndarray}
-  deliverables = {"output_mask": np.ndarray}
+  input_mask: Input[np.ndarray]
+
+  output_mask: Deliverable[np.ndarray]
 
   def _execute(self):
     """Fill the interior of a mask like stack.
