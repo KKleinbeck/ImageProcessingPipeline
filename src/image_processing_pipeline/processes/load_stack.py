@@ -1,14 +1,14 @@
-from image_processing_pipeline.processes.mixins.culling import CullingMixin
 from pathlib import Path
 
 import numpy as np
 import tifffile as tiff
 
 from image_processing_pipeline.framework.process_step import AbstractProcessStep, process_steps
+from image_processing_pipeline.processes.mixins.culling import CullingMixin
 
 from image_processing_pipeline._types import Input, Deliverable
 
-class LoadStack(AbstractProcessStep, CullingMixin):
+class LoadStack(CullingMixin, AbstractProcessStep):
   input_path: Input[Path]
   """Load a stack from a multipage tiff file.
 

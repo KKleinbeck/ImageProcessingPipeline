@@ -15,7 +15,7 @@ class MaskedInputMixin:
   mask_mode: Option[str] = "interpolate"
 
   def _on_set_inputs(self):
-    if self.input_stack.shape[0] <= self.mask_stack.shape[0]:
+    if self.input_stack.shape[0] < self.mask_stack.shape[0]:
       raise IndexError("Input stack must have equal or greater depth than mask stack.")
 
   def _on_set_options(self):

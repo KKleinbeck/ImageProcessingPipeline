@@ -9,7 +9,7 @@ from image_processing_pipeline.processes.mixins import MaskedInputMixin
 from image_processing_pipeline._types import RegexDeliverable, Deliverable
 
 
-class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
+class AnalyseStatistics(MaskedInputMixin, AbstractProcessStep):
   """Computes statistics of the masked region of the input stack.
 
   Deliverables:
