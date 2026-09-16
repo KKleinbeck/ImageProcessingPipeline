@@ -5,14 +5,16 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import Input, Option, Deliverable
+
 
 class ArithmeticStackOperation(AbstractProcessStep):
-  inputs = {"stack_a": np.ndarray, "stack_b": np.ndarray}
-  deliverables = {
-    "result_stack": np.ndarray,
-  }
+  stack_a: Input[np.ndarray]
+  stack_b: Input[np.ndarray]
 
-  options = {"operation": (str, "")}
+  result_stack: Deliverable[np.ndarray]
+
+  operation: Option[str] = ""
 
   def _on_set_inputs(self):
     assert self.stack_a.shape == self.stack_b.shape, "Input stacks must have the same shape"

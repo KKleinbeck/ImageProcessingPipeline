@@ -11,8 +11,8 @@ from image_processing_pipeline._types import Input, RegexDeliverable
 class ExtractObjects(AbstractProcessStep):
   """Extracts a variable, but at execution time constant, number of objects from the stack.
 
-  Currently individual objects must be separated from one another by 0 pixels, but have
-  to have a pixel overlap amongs the stack direction.
+  Currently individual objects must be separated from one another by at least one pixel within each
+  frame. Along the stack, each object must have at least one fixed pixel in each frame.
   """
 
   input_stack: Input[np.ndarray]
