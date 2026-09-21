@@ -16,7 +16,7 @@ class ExtractFrames(AbstractProcessStep):
   extracted_frames: Deliverable[np.ndarray]
   '''Tiff image/stack of frames that were extracted'''
   
-  frames = Option[list] = [0]
+  frames: Option[list] = [0]
   '''List of frames to be extracted'''
 
 

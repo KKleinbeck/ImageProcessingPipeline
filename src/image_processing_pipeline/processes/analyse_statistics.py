@@ -9,16 +9,16 @@ from image_processing_pipeline.processes.mixins import MaskedInputMixin
 from image_processing_pipeline._types import RegexDeliverable, Deliverable
 
 
-class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
-  """ Computes statistics of the masked region of the input stack. 
-  
-      Deliverables:
-        - mean: Mean intensity per frame.
-        - std: Standard deviation of intensity per frame.
-        - qX: X-th percentile of intensity per frame (e.g., q25 for 25th percentile).
-        - mode: Value which maximizes the probability density function of each frame.
+class AnalyseStatistics(MaskedInputMixin, AbstractProcessStep):
+  """Computes statistics of the masked region of the input stack.
+
+  Deliverables:
+    - mean: Mean intensity per frame.
+    - std: Standard deviation of intensity per frame.
+    - qX: X-th percentile of intensity per frame (e.g., q25 for 25th percentile).
+    - mode: Value which maximizes the probability density function of each frame.
   """
-      
+
   mean: Deliverable[list]
   '''Mean intensity of the masked region for each frame'''
   std: Deliverable[list]
@@ -26,7 +26,7 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
   weight: Deliverable[list]
   '''Area in pixels of the masked region for each frame'''
   mode: Deliverable[list]
-  '''Value which maximizes the probability density function of the masked regionfor each frame'''
+  '''Value which maximizes the probability density function of the masked region for each frame'''
 
   _quantile: RegexDeliverable[list, r"q\d+"]
   '''X-th percentile (e.g., q25 for 25th percentile) of intensity within the masked regionfor each frame'''
@@ -45,7 +45,7 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
           raise ValueError(f"Duplicate quantile deliverable 'q{quantile}'.")
         self.quantiles[quantile] = []
 
-  
+
   @staticmethod
   def half_sample_mode(samples: np.ndarray) -> float:
     """Compute the half-sample mode (HSM) for 1D data.
@@ -59,6 +59,7 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
     -------
     mode : float
       Half-sample mode estimate
+
     """
     n = len(samples)
     if n == 0:
@@ -78,7 +79,7 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
     return 0.5 * (float(x[0]) + float(x[1]))
 
   def _execute(self):
-    if self.mode == "common_footprint":
+    if self.mask_mode == "common_footprint":
       combined_mask = np.any(self.mask_stack > 1, axis=0)
       self._get_mask_at_frame = lambda _frame_idx: combined_mask # Override to always return the combined mask  # ty: ignore[invalid-assignment]
 
@@ -95,7 +96,7 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
         for quantile in self.quantiles:
           self.quantiles[quantile].append(0.0)
         continue
-      
+
       samples = np.asarray(self.input_stack[i][mask == 1]).flatten()
       self.mean.append(float(np.sum(samples) / norm))
       self.std.append(float(np.sqrt(np.sum((samples - self.mean[-1])**2) / norm)))

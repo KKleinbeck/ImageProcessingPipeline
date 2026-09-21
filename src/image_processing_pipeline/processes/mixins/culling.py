@@ -4,15 +4,15 @@ from image_processing_pipeline._types import Option, Deliverable
 class CullingMixin:
   top: Option[int | float] = 0
   "Cull frame from the top. Incompatible with options `height` and `offset`."
-  bottom: Option[int | float | None] = None
+  bottom: Option[int | float] = 0
   "Cull image from the bottom. Incompatible with option `height`"
   left: Option[int | float] = 0
   "Cull frame from the left. Incompatible with options `width` and `offset`."
-  right: Option[int | float | None] = None
+  right: Option[int | float] = 0
   "Cull frame from the right. Incompatible with option `width`."
-  width: Option[int | float] = 0
+  width: Option[int | float | None] = None
   "Cull frame to given width. Incompatible with setting both `left` and `right`."
-  height: Option[int | float] = 0
+  height: Option[int | float | None] = None
   "Cull frame to given height. Incompatible with setting both `top` and `bottom`."
   offset: Option[tuple | None] = None
   "Cull image at given offset (i.e., tuple of top and left cull). Incompatible with setting options `left` and `top`."
@@ -21,6 +21,12 @@ class CullingMixin:
   "Shape of the frames prior to culling."
 
   def _on_set_options(self):
+    if not hasattr(self, "former_image_shape"):
+      raise ValueError(
+        f"{self.__class__.__name__}: When implementing CullingMixin, `former_image_shape` must be set in\n\t"
+        "`_on_set_inputs`."
+      )
+
     # Guarantee: Left, right, top, bottom parameters are in the correct format.
     for option in ["left", "right", "top", "bottom"]:
       value = getattr(self, option)
@@ -43,7 +49,7 @@ class CullingMixin:
       self.left = self.offset[1]
 
     # Guarantee: If width and height is set, this does not clash with the other parameters
-    if self.width != 0:
+    if self.width is not None:
       if self.right != 0 and self.left != 0:
         raise ValueError(
           "Attempting to set option 'width', 'left', and 'right' simulatneously."
@@ -59,7 +65,7 @@ class CullingMixin:
       else:
         self.left = self.former_image_shape[1] - self.right - self.width
 
-    if self.height != 0:
+    if self.height is not None:
       if self.top != 0 and self.bottom != 0:
         raise ValueError(
           "Attempting to set option 'height', 'top', and 'bottom' simulatneously."

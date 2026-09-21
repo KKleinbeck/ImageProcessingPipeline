@@ -10,19 +10,19 @@ from image_processing_pipeline._types import Input, RegexDeliverable
 
 class ExtractObjects(AbstractProcessStep):
   """Extracts a variable, but at execution time constant, number of objects from the stack.
-  
-  Currently individual objects must be separated from one another by 0 pixels, but have
-  to have a pixel overlap amongs the stack direction.
-      """
-  
+
+  Currently individual objects must be separated from one another by at least one pixel within each
+  frame. Along the stack, each object must have at least one fixed pixel in each frame.
+  """
+
   input_stack: Input[np.ndarray]
   '''A single/stack of tiff file/s'''
-  
-  object_stack_: RegexDeliverable[np.ndarray, r"q\d+"]
-  ''''''  
-  offset_: RegexDeliverable[tuple, r"q\d+"]
-  ''''''      
-  deliverables = {r"object_stack_\d+": np.ndarray, r"offset_\d+": tuple}
+
+  object_stack_: RegexDeliverable[np.ndarray, r"object_stack_\d+"]
+  ''''''
+  offset_: RegexDeliverable[tuple, r"offset_\d+"]
+  ''''''
+
 
   def _on_verify_deliverables(self):
     self.stacks = sorted({k for k in self.deliverables_actual if "stack" in k})
@@ -36,7 +36,6 @@ class ExtractObjects(AbstractProcessStep):
       assert s.split("_")[-1] == o.split("_")[-1], f"Mismatch of paring index. Tried to pair deliverables {s} and {o}."
 
   def _execute(self):
-   
     labelled, n_labels = nd.label(self.input_stack)
     n_expected = len(self.deliverables_actual) // 2
     assert n_labels == n_expected, f"Mismatch between objects found ({n_labels}) and expected number ({n_expected})"

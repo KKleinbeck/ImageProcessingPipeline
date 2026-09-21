@@ -4,11 +4,14 @@ from image_processing_pipeline.framework.process_step import (
   AbstractProcessStep,
   process_steps,
 )
-from image_processing_pipeline._types import Input, Deliverable, Option
+
+from image_processing_pipeline._types import Input, Deliverable
 
 class ShrinkToContent(AbstractProcessStep):
-  inputs = {"input_stack": np.ndarray}
-  deliverables = {"output_stack": np.ndarray, "offset": tuple}
+  input_stack: Input[np.ndarray]
+
+  output_stack: Deliverable[np.ndarray]
+  offset: Deliverable[tuple]
 
   def _execute(self):
     """Shrinp the input stack to the smallest footprint, that contains all non-zero values.

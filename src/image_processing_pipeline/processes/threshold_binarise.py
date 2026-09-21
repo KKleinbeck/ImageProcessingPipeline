@@ -7,22 +7,23 @@ from image_processing_pipeline.framework.process_step import (
 
 from image_processing_pipeline._types import Input, Deliverable, Option
 class ThresholdBinarise(AbstractProcessStep):
-  inputs = {
-    "input_stack": np.ndarray,
-  }
-  deliverables = {
-    "binary_stack": np.ndarray,
-  }
+  input_stack: Input[np.ndarray]
 
-  options = {
-    "threshold": (float, 0.5),
-  }
+  binary_stack: Deliverable[np.ndarray]
 
-  def _on_set_inputs(self):
-    assert np.all((self.input_stack >= 0) & (self.input_stack <= 1)), "Input stack must be in [0, 1] range."
+  threshold: Option[float] = 0.5
+  allow_non_normalised: Option[bool] = False
 
   def _on_set_options(self):
-    assert 0 <= self.threshold <= 1, "Threshold must be in [0, 1] range."
+    if (
+      not ( np.all((self.input_stack >= 0) & (self.input_stack <= 1)) )
+      and
+      not self.allow_non_normalised
+    ):
+      raise ValueError("ThresholdBinarise: Input stack must be in [0, 1] range.")
+
+    if not (0 <= self.threshold <= 1) and not self.allow_non_normalised:
+      raise ValueError("ThresholdBinarise: Threshold must be in [0, 1] range.")
 
   def _execute(self):
     """Binerises the image stack based on a threshold.

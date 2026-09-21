@@ -1,15 +1,15 @@
-from image_processing_pipeline.processes.mixins.culling import CullingMixin
 from pathlib import Path
 
 import numpy as np
 import tifffile as tiff
 
 from image_processing_pipeline.framework.process_step import AbstractProcessStep, process_steps
+from image_processing_pipeline.processes.mixins.culling import CullingMixin
 
 from image_processing_pipeline._types import Input, Deliverable
 
 
-class LoadStack(AbstractProcessStep, CullingMixin):
+class LoadStack(CullingMixin, AbstractProcessStep):
   """Load a stack from a multipage tiff file.
 
   Opens an image from a tiff file and crops the image to a region of interest (defined by CullBoundary).
@@ -22,6 +22,7 @@ class LoadStack(AbstractProcessStep, CullingMixin):
   loaded_stack: Deliverable[np.ndarray]
   """Image stack, potentially cropped (defined by the Options),"""
   culled_image_offset: Deliverable[tuple]
+  """Image offset"""  # I DO NOT KNOW WHAT THIS DOES
 
   def _on_set_inputs(self):
     with tiff.TiffFile(self.input_path) as tif:

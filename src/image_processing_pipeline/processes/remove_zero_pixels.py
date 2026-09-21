@@ -6,15 +6,13 @@ from image_processing_pipeline.framework.process_step import (
 )
 
 from image_processing_pipeline._types import Input, Deliverable, Option
-class RemoveZeroPixels(AbstractProcessStep):
-  inputs = {
-    "input_stack": np.ndarray,
-  }
-  deliverables = {
-    "corrected_stack": np.ndarray,
-  }
 
-  options = {"replace_by": (str, "min")}
+class RemoveZeroPixels(AbstractProcessStep):
+  input_stack: Input[np.ndarray]
+
+  corrected_stack: Deliverable[np.ndarray]
+
+  replace_by: Option[str] = "min"
 
   def _on_set_options(self):
     assert self.replace_by in ["min", "max"], "Option 'replace_by' must be either 'min' or 'max'."
