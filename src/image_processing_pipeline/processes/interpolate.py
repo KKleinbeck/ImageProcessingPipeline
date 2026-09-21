@@ -6,22 +6,23 @@ from image_processing_pipeline.framework.process_step import (
 )
 from image_processing_pipeline._types import Input, Deliverable, Option
 
+
 class Interpolate(AbstractProcessStep):
   """Generate interpolated result at given index.
-  
-      Fills the interpolated stack at index `i` by interpolating the with values of the
-      input stack at index `s` (start) and `e` (end), depending on the mode.
-      - `mode == "interpolate"`: Takes the values of the input stack at index `s` and `e` and weights them according to
-        their distance to `i` for the interpolation.
-      - `mode == "previous"`: Fills the interpolated stack with the value of the input stack at index `s`.
-      - `mode == "next"`: Fills the interpolated stack with the value of the input stack at index `e`.
-      - `mode == "common_footprint"`: Only for mask inputs. Fills the interpolated stack with overlap of the masks at
-        index `s` and `e`.
-      """
- 
+
+  Fills the interpolated stack at index `i` by interpolating the with values of the
+  input stack at index `s` (start) and `e` (end), depending on the mode.
+  - `mode == "interpolate"`: Takes the values of the input stack at index `s` and `e` and weights them according to
+    their distance to `i` for the interpolation.
+  - `mode == "previous"`: Fills the interpolated stack with the value of the input stack at index `s`.
+  - `mode == "next"`: Fills the interpolated stack with the value of the input stack at index `e`.
+  - `mode == "common_footprint"`: Only for mask inputs. Fills the interpolated stack with overlap of the masks at
+    index `s` and `e`.
+  """
+
   input_stack: Input[np.ndarray]
   """Stack of 0/1 masks, with potentially missing masks in the middle"""
-  
+
   interpolated_stack: Deliverable[np.ndarray]
   """Processed 0/1 mask stack. If frames in the middle were initially blank, they now contain interpolated 0/1 masks."""
   interpolated_frames: Deliverable[list]
@@ -35,7 +36,6 @@ class Interpolate(AbstractProcessStep):
       -"next"`: Fills the interpolated stack with the value of the input stack at index `e`.
       - "common_footprint"`: Only for mask inputs. Fills the interpolated stack with overlap of the masks at
         index `s` and `e`."""
-  
 
   def _on_set_options(self):
     if self.mode not in {"interpolate", "common_footprint", "previous", "next"}:
@@ -47,7 +47,7 @@ class Interpolate(AbstractProcessStep):
       )
 
   def _interpolate(self, i: int, s: int, e: int) -> None:
-    
+
     match self.mode:
       case "interpolate":
         w1 = (i - s + 1) / (e - s + 2)

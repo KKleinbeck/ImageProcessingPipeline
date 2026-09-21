@@ -3,22 +3,72 @@ Inputs:
 
 
 PipelineSteps:
-  # Preprocessing for the masks
+  # Start by loading the input image
   - DisplayId: Load Input Image
     ProcessStep: LoadStack
     Inputs:
       input_path: input_image_path
     Deliverables:
       loaded_stack: input_image
-  - DisplayId: Analyse local bariance
-    ProcessStep: LocalVariance
+
+  # ================================================================================
+  # First, we want to determine a mask, that only contains the cell.
+  - DisplayId: Edge Filter
+    ProcessStep: GenerateEdgeMask
     Inputs:
       input_stack: input_image
+    Options:
+      sigma: 5.
     Deliverables:
-      local_variance_stack: local_variance
+      edge_mask: edge_mask
+
+  - DisplayId: Geometry Filter Edge Mask
+    ProcessStep: GeometryFilterMasks
+    Inputs:
+      input_stack: edge_mask
+    Options: # gets rids of regions that are too small.
+      min_size_dx: 250.
+      min_size_dy: 250.
+    Deliverables:
+      filtered_mask_stack: edge_mask_filtered
+
+  - DisplayId: Invert Image
+    ProcessStep: Invert
+    Inputs:
+      input_stack: edge_mask_filtered
+    Deliverables:
+      inverted_stack: edge_mask_filtered_inverted
+
+  - DisplayId: Geometry Filter Inverted Edge Mask
+    ProcessStep: GeometryFilterMasks
+    Inputs:
+      input_stack: edge_mask_filtered_inverted
+    Options: # gets rids of regions that are either too large and regions with too few pixels.
+      min_area: 50000.
+      max_size_dx: 260.
+      max_size_dy: 260.
+    Deliverables:
+      filtered_mask_stack: cell_mask
+
+  # ================================================================================
+  # Now that we have a suitable mask, we apply it to our image and crop the image.
+  - DisplayId: Apply Cell mask
+    ProcessStep: ApplyMask
+    Inputs:
+      input_stack: input_image
+      mask_stack: cell_mask
+    Deliverables:
+      masked_stack: input_image_masked
+  
+  - DisplayId: Crop Image to Cell Content
+    ProcessStep: ShrinkToContent
+    Inputs:
+      input_stack: input_image_masked
+    Deliverables:
+      output_stack: cell_content
 
 
 Serialisations:
  - RelativeOutputPath: .
-   Data:
-    - local_variance
+   Data: []
+    # - local_variance

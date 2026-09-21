@@ -7,22 +7,24 @@ from image_processing_pipeline.framework.process_step import (
 
 from image_processing_pipeline._types import Input, Deliverable
 
+
 class ExtractDimensions(AbstractProcessStep):
-  """Extract the shape of a tiff stack; 
-  
+  """Extract the shape of a tiff stack.
+
   Will extract the depth, height and width of a stack of tiff files.
-  2d images will have a depth of 0."""
-  
+  2d images will have a depth of 0.
+  """
+
   input_stack: Input[np.ndarray]
-  '''A single/stack of tiff file/s'''
-  
+  """A single/stack of tiff file/s"""
+
   depth: Deliverable[int]
-  '''Depth of tiff stack in frames'''
+  """Depth of tiff stack in frames"""
   width: Deliverable[int]
-  '''Width of image in tiff stack in pixels'''
+  """Width of image in tiff stack in pixels"""
   height: Deliverable[int]
-  '''Height of image in tiff stack in pixels'''
-  
+  """Height of image in tiff stack in pixels"""
+
   def _on_set_inputs(self):
     assert self.input_stack.ndim in [2, 3], f"Input stack must be 2D or 3D, got {self.input_stack.ndim}D."
 

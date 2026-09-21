@@ -20,16 +20,16 @@ class AnalyseStatistics(MaskedInputMixin, AbstractProcessStep):
   """
 
   mean: Deliverable[list]
-  '''Mean intensity of the masked region for each frame'''
+  """Mean intensity of the masked region for each frame"""
   std: Deliverable[list]
-  '''Standard deviation of intensity within the masked region for each frame'''
+  """Standard deviation of intensity within the masked region for each frame"""
   weight: Deliverable[list]
-  '''Area in pixels of the masked region for each frame'''
+  """Area in pixels of the masked region for each frame"""
   mode: Deliverable[list]
-  '''Value which maximizes the probability density function of the masked region for each frame'''
+  """Value which maximizes the probability density function of the masked region for each frame"""
 
   _quantile: RegexDeliverable[list, r"q\d+"]
-  '''X-th percentile (e.g., q25 for 25th percentile) of intensity within the masked regionfor each frame'''
+  """X-th percentile (e.g., q25 for 25th percentile) of intensity within the masked regionfor each frame"""
 
   def _on_verify_deliverables(self):
     self.quantiles = {}
@@ -44,7 +44,6 @@ class AnalyseStatistics(MaskedInputMixin, AbstractProcessStep):
         if quantile in self.quantiles:
           raise ValueError(f"Duplicate quantile deliverable 'q{quantile}'.")
         self.quantiles[quantile] = []
-
 
   @staticmethod
   def half_sample_mode(samples: np.ndarray) -> float:
@@ -68,9 +67,9 @@ class AnalyseStatistics(MaskedInputMixin, AbstractProcessStep):
     x = np.sort(samples)
     while n > 2:
       h = (n + 1) // 2  # half-sample size (ceil)
-      widths = x[h - 1:] - x[:n - h + 1]
+      widths = x[h - 1 :] - x[: n - h + 1]
       i = np.argmin(widths)
-      x = x[i:i + h]
+      x = x[i : i + h]
       n = len(x)
 
     # Base case
@@ -81,7 +80,8 @@ class AnalyseStatistics(MaskedInputMixin, AbstractProcessStep):
   def _execute(self):
     if self.mask_mode == "common_footprint":
       combined_mask = np.any(self.mask_stack > 1, axis=0)
-      self._get_mask_at_frame = lambda _frame_idx: combined_mask # Override to always return the combined mask  # ty: ignore[invalid-assignment]
+      # Override to always return the combined mask
+      self._get_mask_at_frame = lambda _frame_idx: combined_mask  # ty: ignore[invalid-assignment]
 
     self.mean, self.std, self.weight, self.mode = [], [], [], []
     for i in range(self.input_stack.shape[0]):
@@ -99,12 +99,10 @@ class AnalyseStatistics(MaskedInputMixin, AbstractProcessStep):
 
       samples = np.asarray(self.input_stack[i][mask == 1]).flatten()
       self.mean.append(float(np.sum(samples) / norm))
-      self.std.append(float(np.sqrt(np.sum((samples - self.mean[-1])**2) / norm)))
+      self.std.append(float(np.sqrt(np.sum((samples - self.mean[-1]) ** 2) / norm)))
 
       for quantile in self.quantiles:
-        self.quantiles[quantile].append(float(np.percentile(
-          samples, quantile, method="inverted_cdf"
-        )))
+        self.quantiles[quantile].append(float(np.percentile(samples, quantile, method="inverted_cdf")))
 
       self.mode.append(float(self.half_sample_mode(samples)))
 

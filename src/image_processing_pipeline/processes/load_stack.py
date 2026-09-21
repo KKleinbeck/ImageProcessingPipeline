@@ -22,7 +22,7 @@ class LoadStack(CullingMixin, AbstractProcessStep):
   loaded_stack: Deliverable[np.ndarray]
   """Image stack, potentially cropped (defined by the Options),"""
   culled_image_offset: Deliverable[tuple]
-  """Image offset"""  # I DO NOT KNOW WHAT THIS DOES
+  """Offset after culling, i.e., tuple of top & left cull distance."""
 
   def _on_set_inputs(self):
     with tiff.TiffFile(self.input_path) as tif:

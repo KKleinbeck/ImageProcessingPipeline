@@ -11,10 +11,25 @@ from image_processing_pipeline._types import Input, Deliverable, Option
 
 class ApplyMorphologies(AbstractProcessStep):
   input_stack: Input[np.ndarray]
+  "A stack of arbitrary images."
 
   morphed_stack: Deliverable[np.ndarray]
+  "Stack after transformation"
 
   strategy: Option[dict] = {"binary_erosion": {"iterations": 1}}
+  """Strategies to apply. The step executes all provided strategies in order.
+
+  Supported strategies are binary_erosion, binary_dilation, binary_opnening, and binary_closing;
+  see `scipy.ndimage`.
+  """
+
+  def _on_set_options(self):
+    supported_strategies = ["binary_erosion", "binary_dilation", "binary_opnening", "binary_closing"]
+    for name in self.strategy.keys():
+      if name not in supported_strategies:
+        raise KeyError(
+          f"Cannot apply strategy '{name}', supported is {','.join(str(s) for s in supported_strategies)}."
+        )
 
   def _execute(self):
     """Apply morphological operations to the input stack according to the specified strategy."""
@@ -39,8 +54,6 @@ class ApplyMorphologies(AbstractProcessStep):
         self.input_stack = nd.binary_closing(self.input_stack, iterations=iterations, axes=(1, 2)).astype(
           self.input_stack.dtype
         )
-      else:
-        raise ValueError(f"Unknown morphology operation '{name}'")
     self.morphed_stack = self.input_stack
 
 
