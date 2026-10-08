@@ -16,13 +16,14 @@ class FourierDenoise(AbstractProcessStep):
   """
   
   input_stack: Input[np.ndarray]
-  """Stack of 0/1 masks, with potentially missing masks at the beginning or end.""" ########OR A TIFF STACK
+  """Stack of 0/1 masks, with potentially missing masks at the beginning or end."""
 
   denoised_stack: Deliverable[np.ndarray]
+  """A ndarray of 0/1 masks which which has been denoised"""
   
   denoise_level: Option[float] = 1.0
-
-  options = {"denoise_level": (float, 1.0)}
+  """A value between 0 -1 which denotes XXXXXXXXXXXXXXX"""
+ 
 
   def _on_set_options(self):
     assert 0.0 < self.denoise_level <= 1.0, "Denoise level must be in the range (0, 1]."

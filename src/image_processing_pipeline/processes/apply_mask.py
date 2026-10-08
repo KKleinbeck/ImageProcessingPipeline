@@ -21,20 +21,20 @@ class ApplyMask(AbstractProcessStep):
       """
       
   input_stack : Input[np.ndarray]
-  '''Tiff stack that mask will be applied on'''
+  """A ndarray containing pixel values corresponding to a tiff image/stack """
   mask_stack : Input[np.ndarray]
-  '''Stack containing a 0/1 mask that will be applied to the image stack. Must be of an equal or smaller depth than the image stack and evenly distributed'''
-  
+  """ A ndarray containing a 0/1 mask that will be applied to the image stack. Must be of an equal or smaller depth than the image stack and evenly distributed"""
+
   masked_stack: Deliverable[np.ndarray]
-  ''' Stack containing a 0/1 mask that has been applied onto a tiff stack of images'''
+  """ A ndarray containing either the original pixel values (where the mask is 1) or 0s (where the mask is 0)."""
   
   mode: Option[str] = "Interpolate"
-  '''Mode of interpolation when the mask stack has a smaller depth than the input stack. There are four modes
+  """Mode of interpolation when the mask stack has a smaller depth than the input stack. There are four modes
         - interpolate: Linearly interpolate between mask frames.
-          - common_footprint: Crop to the common footprint of the entire mask stack.
-          - previous: Use the previous mask frame for each input frame.
-          - next: Use the next mask frame for each input frame.
-  '''
+        - common_footprint: Crop to the common footprint of the entire mask stack.
+        - previous: Use the previous mask frame for each input frame.
+        - next: Use the next mask frame for each input frame.
+  """
 
   def _on_set_inputs(self):
     assert self.input_stack.shape[0] >= self.mask_stack.shape[0], (

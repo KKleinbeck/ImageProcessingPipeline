@@ -5,18 +5,26 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
-from image_processing_pipeline._types import Input, Deliverable, Option
+from image_processing_pipeline._types import Input, Deliverable
 class VisualiseBlobMask(AbstractProcessStep):
-  inputs = {"input_stack": np.ndarray, "blob_mask_stack": np.ndarray, "background_mask_stack": np.ndarray}
-  deliverables = {"overlay_mask": np.ndarray}
+  """Generate blob overlay.
+      Colour code:
+      - red overlay for detected blobs,
+      - green overlay for detected background.
+      """
 
+  input_stack: Input[np.ndarray]
+  """Original tiff stack"""
+
+  blob_mask_stack: Input[np.ndarray]
+  """Blob detection"""
+  background_mask_stack: Input[np.ndarray]
+  """Background detection"""
+
+  overlay_mask: Deliverable[np.ndarray]
+  """Combined"""
+  
   def _execute(self):
-    """Generate blob overlay.
-
-    Colour code:
-    - red overlay for detected blobs,
-    - green overlay for detected background.
-    """
     blob_color = (1.0, 0.0, 0.0)
     bg_color = (0.0, 1.0, 0.0)
     alpha_blob = 0.125

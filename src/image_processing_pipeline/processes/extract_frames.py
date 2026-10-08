@@ -11,13 +11,13 @@ class ExtractFrames(AbstractProcessStep):
   """Extract a set of frames from the input stack."""
   
   input_stack: Input[np.ndarray]
-  '''A stack of tiff file/s'''
+  """A ndarray containing pixel values corresponding to a tiff image/stack """
   
   extracted_frames: Deliverable[np.ndarray]
-  '''Tiff image/stack of frames that were extracted'''
+  """A ndarray contating only the pixel values from the tiff frame/s that were extracted"""
   
   frames = Option[list] = [0]
-  '''List of frames to be extracted'''
+  """List of frames to be extracted"""
 
 
   def _on_set_options(self):

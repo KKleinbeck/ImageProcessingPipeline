@@ -4,23 +4,30 @@ from image_processing_pipeline.framework.process_step import (
   AbstractProcessStep,
   process_steps,
 )
-from image_processing_pipeline._types import Input, Deliverable, Option
+from image_processing_pipeline._types import Input, Deliverable
 
 class ShrinkToContent(AbstractProcessStep):
-  inputs = {"input_stack": np.ndarray}
-  deliverables = {"output_stack": np.ndarray, "offset": tuple}
+  """Shrink the input stack to the smallest footprint, that contains all non-zero values.
+  
+      Iterate through all images in the input stack and identifies a crop, which shrinks the
+      stack to the smallest footprint which contains all non-zero/ non-false values.
+  
+      Returns the cropped stack and the applied offset (crop width & height implicitly
+      communicated through the dimensions of the cropped stack).
+      """
+
+  input_stack: Input[np.ndarray]
+  """A ndarray containing a 0/1 mask"""
+    
+  output_stack: Deliverable[np.ndarray]
+  """An ndarray which consists of the smallest possible footprint that contains all non-zero/false values"""
+  offset: Deliverable[tuple] 
+  """Offset value which is used for the crop to the smaller footprint""" 
+
+
 
   def _execute(self):
-    """Shrinp the input stack to the smallest footprint, that contains all non-zero values.
-
-    Iterate through all images in the input stack and identifies a crop, which shrinks the
-    stack to the smallest footprint which contains all non-zero/ non-false values.
-
-    Returns the cropped stack and the applied offset (crop width & height implicitly
-    communicated through the dimensions of the cropped stack).
-    """
     projection = np.any(self.input_stack, axis=0)
-
     a0_projection = np.any(projection, axis=0)
     a0_nonzero = a0_projection.nonzero()[0]
     a0_offset, a0_max = a0_nonzero[0], a0_nonzero[-1]

@@ -13,6 +13,8 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
   """ Computes statistics of the masked region of the input stack. 
   
       Deliverables:
+        - Each deliverable computes the statistic within the given masked region of an indivudal frame of the input stack. 
+        The following deliverables are available:
         - mean: Mean intensity per frame.
         - std: Standard deviation of intensity per frame.
         - qX: X-th percentile of intensity per frame (e.g., q25 for 25th percentile).
@@ -20,16 +22,16 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
   """
       
   mean: Deliverable[list]
-  '''Mean intensity of the masked region for each frame'''
+  """Mean intensity of the masked region for each frame"""
   std: Deliverable[list]
-  '''Standard deviation of intensity within the masked region for each frame'''
+  """Standard deviation of intensity within the masked region for each frame"""
   weight: Deliverable[list]
-  '''Area in pixels of the masked region for each frame'''
+  """Area in pixels of the masked region for each frame"""
   mode: Deliverable[list]
-  '''Value which maximizes the probability density function of the masked regionfor each frame'''
+  """Value which maximizes the probability density function of the masked region for each frame"""
 
   _quantile: RegexDeliverable[list, r"q\d+"]
-  '''X-th percentile (e.g., q25 for 25th percentile) of intensity within the masked regionfor each frame'''
+  """X-th percentile (e.g., q25 for 25th percentile) of intensity within the masked region for each frame"""
 
   def _on_verify_deliverables(self):
     self.quantiles = {}

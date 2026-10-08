@@ -8,36 +8,39 @@ from image_processing_pipeline.framework.process_step import (
 from image_processing_pipeline._types import Input, Deliverable, Option
 
 class CullBoundary(AbstractProcessStep):
-  """Binerises the image stack based on a threshold.
-  
-    Assume input is normalised to [0,1]. For this every pixel value below the threshold
-    is set to 0, every pixel value above or equal to the threshold is set to 1.
-    
-    """ #########DOES THIS REALLY DO THIS ? DOESN'T IT CROP THE IMAGE ??
+  """ Crops the ndarray to specified dimensions that define a region of interest.
+
+  The values fro the cropping are set via the options. For width and height, you can set up to 2 of the 3 parameters.
+  The width/height value will be followed first, followed by removing data from the exterior edges. 
+   - Width: Specified by left, right and width. 
+   - Height: pecified by top, bottom and height.
+   - Offset:  
+  """ 
 
   input_stack: Input[np.ndarray]
-  
+  """A ndarray containing pixel values corresponding to a full tiff image/stack """
   culled_stack: Deliverable[np.ndarray]
+  """A ndarray containing pixel values corresponding to a specified region of a tiff image/stack """
+
   former_image_shape: Deliverable[tuple]
+  """The original shape of the ndarray prior to cropping"""
   culled_image_offset: Deliverable[tuple]
+  """Values which correspond to the cropping parameters."""
   
   top: Option[int,float] = 0
+  """Number of rows to remove from the top"""
   bottom: Option[int,float] = 0
+  """Number of rows to remove from the bottom"""
   left: Option[int,float] = 0
+  """Number of columns to remove from the left"""
   right: Option[int,float] = 0
+  """Number of columns to remove from the right"""
   width: Option[int,float] = 0
-  height: Option[int | float] = 0 ###################WHY IS THIS ONE DIFFERENT TO THE OTHERS
+  """Limit to number of columns wide, from left to right"""
+  height: Option[int | float] = 0 
+  """Limit of number of rows long, from top to bottom"""
   offset: Option[tuple | None, None]
-  
-  options = {
-    "top": ((int, float), 0),
-    "bottom": ((int, float), 0),
-    "left": ((int, float), 0),
-    "right": ((int, float), 0),
-    "width": ((int, float), 0),
-    "height": (int | float, 0),
-    "offset": (tuple | None, None),
-  }
+  """NEEDS TO BE COMMENTED"""
 
   def _on_set_inputs(self):
     self.former_image_shape = self.input_stack.shape[1:]

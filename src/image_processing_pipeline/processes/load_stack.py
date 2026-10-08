@@ -22,11 +22,12 @@ class LoadStack(CullBoundary):  # Inherit from CullBoundary to reuse its options
      -False: The images in the tiff stack will be cropped to a region of interest."""
   
   loaded_stack: Deliverable[np.ndarray]
-  """Tiff stack that is cropped to a region of interest (defined by CullBoundary)"""
+  """A ndarray that has been cropped from its full size to a region of interest (defined by CullBoundary)"""
   former_image_shape: Deliverable[tuple]
-  """Original shape of frame 0 of the initial tiff file"""
+  """Original shape of the ndarray prior to cropping"""
   culled_image_offset: Deliverable[tuple]
-"""Image offset""" #I DO NOT KNOW WHAT THIS DOES
+  """Cropping offset values that were used to generate the cropped ndarray""" 
+
   # Options and option verification inherited from CullBoundary
 
   def _on_set_inputs(self):

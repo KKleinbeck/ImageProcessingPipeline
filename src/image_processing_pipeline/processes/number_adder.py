@@ -1,5 +1,3 @@
-"""Sums up a list of provided input numbers."""
-
 import re
 
 from image_processing_pipeline.framework.process_step import (

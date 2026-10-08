@@ -11,7 +11,7 @@ class GenerateFullMask(AbstractProcessStep):
   """Generate a mask that is '1' everywhere, and has the shape of the input image."""
   
   input_stack: Input[np.ndarray]
-  """A single/stack of tiff image/s"""
+  """A ndarray conating pixel values corresponding to a tiff image/stack"""
   
   mask_stack: Deliverable[np.ndarray]
   """A mask containing a 1 in every postion. It has the same shape as the input stack"""

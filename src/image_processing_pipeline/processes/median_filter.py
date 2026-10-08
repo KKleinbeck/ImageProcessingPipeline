@@ -9,18 +9,21 @@ from image_processing_pipeline.framework.process_step import (
 from image_processing_pipeline._types import Input, Deliverable, Option
 
 class MedianFilter(AbstractProcessStep):
-   """Apply a median filter to the image stack.
+  """Apply a median filter to the image stack.
   
-      For this the scipy.ndimage.median_filter function is used. The filter is applied
-      `iterations` times with a filter size of `size`.
-      """
-   input_stack: Input[np.ndarray]
-   """Stack of 0/1 masks"""
+    For this the scipy.ndimage.median_filter function is used. The filter is applied
+    `iterations` times with a filter size of `size`.
+    """
+  input_stack: Input[np.ndarray]
+  """A ndarray conatining a series of values"""
 
-   filtered_stack: Deliverable[np.ndarray]
+  filtered_stack: Deliverable[np.ndarray]
+  """A ndarray which has had a median filter applied"""
 
-   iterations: Option[int] =1
-   size: Option[int] = 3
+  iterations: Option[int] =1
+  """Number of iterations - for further infortmation see scipy.ndimage.median_filter"""
+  size: Option[int] = 3
+  """Filter size - for further infortmation see scipy.ndimage.median_filter"""
  
 
   def _execute(self):

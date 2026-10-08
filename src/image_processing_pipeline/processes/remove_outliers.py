@@ -14,10 +14,11 @@ class RemoveOutliers(AbstractProcessStep):
       """
   
   input_stack: Input[np.ndarray]
-  """"""
+  """A ndarray containing pixel values corresponding to a tiff image/stack """
 
   filtered_stack: Deliverable[np.ndarray]
-  """A ndarray, containing values from the initial input_stack that have been """
+  """A ndarray containing pixel values that have had outlers above a specified threshold removed. 
+  These outliers have been set to the value of the threshold."""
 
   lower_quantile: Option[float] = 0.0
   upper_quantile: Option[float] = 1.0

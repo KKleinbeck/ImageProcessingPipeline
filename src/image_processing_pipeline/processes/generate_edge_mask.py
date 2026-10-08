@@ -11,7 +11,7 @@ from image_processing_pipeline._types import Input, Deliverable, Option
 class GenerateEdgeMask(AbstractProcessStep):
   """Generates an edge mask.
   
-  The masks contains True where an edge is detected, False otherwise.
+  The masks contains True where an edge is detected (1), False otherwise (0).
   Parameter sigma defines the kernel width used for the Gaussian Laplace filter.
   """
   input_stack: Input[np.ndarray]
