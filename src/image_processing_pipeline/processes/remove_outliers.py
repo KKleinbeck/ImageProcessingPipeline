@@ -6,13 +6,14 @@ from image_processing_pipeline.framework.process_step import (
 )
 from image_processing_pipeline._types import Input, Deliverable, Option
 
+
 class RemoveOutliers(AbstractProcessStep):
-  """Remove outliers from the image stack.
-  
-      For this every pixel value below or above the quantile specified in the options parameter
-      is set to the respective quantile values.
-      """
-  
+  """Remove outliers from the ndarray.
+
+  or this every pixel value below or above the quantile specified in the options parameter
+  is set to the respective quantile values.
+  """
+
   input_stack: Input[np.ndarray]
   """A ndarray containing pixel values corresponding to a tiff image/stack """
 
@@ -21,8 +22,9 @@ class RemoveOutliers(AbstractProcessStep):
   These outliers have been set to the value of the threshold."""
 
   lower_quantile: Option[float] = 0.0
+  """The value for the lower quantile. Any values below this will instead be set to this value"""
   upper_quantile: Option[float] = 1.0
- 
+  """The value for the upper quantile. Any values above this will instead be set to this value"""
 
   def _execute(self):
     # Get quantiles for each slice

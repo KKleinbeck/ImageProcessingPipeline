@@ -25,7 +25,9 @@ class ArithmeticStackOperation(AbstractProcessStep):
     - multiply: multiplication ( a * b)
     - divide: division ( a / b) """
 
-  options = {"operation": (str, "")}
+  result_stack: Deliverable[np.ndarray]
+
+  operation: Option[str] = ""
 
   def _on_set_inputs(self):
     assert self.stack_a.shape == self.stack_b.shape, "Input stacks must have the same shape"

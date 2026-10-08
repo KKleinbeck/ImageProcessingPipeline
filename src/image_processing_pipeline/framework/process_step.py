@@ -53,7 +53,7 @@ class AbstractProcessStep(ABC):
     """
     self._execute()
     self._validate_deliverables()
-    return {self.delivers_id_map[d]: getattr(self, d) for d in self.deliverables_actual}
+    return {self.delivers_id_map[d]: getattr(self, d) for d in self.deliverables_actual if d in self.delivers_id_map}
 
   @abstractmethod
   def _execute(self):
@@ -131,7 +131,7 @@ class AbstractProcessStep(ABC):
 
     # Check exact match
     msg = []
-    if missing:
+    if missing and source != AttributeType.Deliverable:  # ignore missing ids for Deliverables
       msg.append(f"Missing {source.name}: {', '.join(missing)}")
     if extra and not extra_okay:
       msg.append(f"Unexpected {source.name}: {', '.join(extra)}")

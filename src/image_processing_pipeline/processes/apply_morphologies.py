@@ -47,8 +47,6 @@ class ApplyMorphologies(AbstractProcessStep):
         self.input_stack = nd.binary_closing(self.input_stack, iterations=iterations, axes=(1, 2)).astype(
           self.input_stack.dtype
         )
-      else:
-        raise ValueError(f"Unknown morphology operation '{name}'")
     self.morphed_stack = self.input_stack
 
 

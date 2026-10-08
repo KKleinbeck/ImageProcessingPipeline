@@ -12,17 +12,17 @@ class MaskedInputMixin:
   """Stack of masks. Can be smaller in depth than the input stack, in which case missing masks will be generated
   according to `mode`."""
 
-  mode: Option[str] = "interpolate"
+  mask_mode: Option[str] = "interpolate"
 
   def _on_set_inputs(self):
-    if self.input_stack.shape[0] <= self.mask_stack.shape[0]:
+    if self.input_stack.shape[0] < self.mask_stack.shape[0]:
       raise IndexError("Input stack must have equal or greater depth than mask stack.")
 
   def _on_set_options(self):
     if self.input_stack.shape[0] == self.mask_stack.shape[0]:
-      self.mode = "previous"  # No interpolation needed
-    if self.mode not in {"interpolate", "common_footprint", "previous", "next"}:
-      raise ValueError(f"Unknown mode '{self.mode}'. Supported: interpolate, common_footprint, previous, next")
+      self.mask_mode = "previous"  # No interpolation needed
+    if self.mask_mode not in {"interpolate", "common_footprint", "previous", "next"}:
+      raise ValueError(f"Unknown masking mode '{self.mode}'. Supported: interpolate, common_footprint, previous, next")
 
   def _get_mask_at_frame(self, frame_idx: int) -> np.ndarray:
     mask_idx = (
@@ -32,9 +32,9 @@ class MaskedInputMixin:
     )
     lower_idx = int(np.floor(mask_idx))
     upper_idx = int(np.ceil(mask_idx))
-    if self.mode == "previous":
+    if self.mask_mode == "previous":
       weight_upper = 0
-    elif self.mode == "next":
+    elif self.mask_mode == "next":
       weight_upper = 1
     else:
       weight_upper = mask_idx - lower_idx

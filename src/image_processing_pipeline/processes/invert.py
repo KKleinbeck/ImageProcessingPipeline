@@ -6,6 +6,7 @@ from image_processing_pipeline.framework.process_step import (
 )
 from image_processing_pipeline._types import Input, Deliverable
 
+
 class Invert(AbstractProcessStep):
   """Inverts the image stack.
 

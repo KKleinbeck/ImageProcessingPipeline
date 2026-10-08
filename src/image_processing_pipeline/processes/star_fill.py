@@ -5,7 +5,9 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
-from image_processing_pipeline._types import Input, Deliverable, Option
+from image_processing_pipeline._types import Input, Deliverable
+
+
 class StarFill(AbstractProcessStep):
   """Fill the interior of a mask like stack.
   

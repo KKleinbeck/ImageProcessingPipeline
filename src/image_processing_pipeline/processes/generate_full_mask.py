@@ -7,9 +7,10 @@ from image_processing_pipeline.framework.process_step import (
 
 from image_processing_pipeline._types import Input, Deliverable
 
+
 class GenerateFullMask(AbstractProcessStep):
   """Generate a mask that is '1' everywhere, and has the shape of the input image."""
-  
+
   input_stack: Input[np.ndarray]
   """A ndarray conating pixel values corresponding to a tiff image/stack"""
   

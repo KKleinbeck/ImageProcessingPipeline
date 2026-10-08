@@ -7,6 +7,7 @@ from image_processing_pipeline.framework.process_step import (
 
 from image_processing_pipeline._types import RegexInput, Option, Deliverable
 
+
 class CombineOffsets(AbstractProcessStep):
   """Combines multiple offsets through element-wise addition to provide a specific region of interest (ROI).
   

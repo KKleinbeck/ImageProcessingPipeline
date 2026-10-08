@@ -7,8 +7,9 @@ from image_processing_pipeline.framework.process_step import (
 
 from image_processing_pipeline._types import Input, Deliverable
 
+
 class Normalise(AbstractProcessStep):
-  """Normalises the image stack to [0, 1] range."""
+  """Normalises the pixel values in a ndarray to [0, 1] range."""
 
   input_stack: Input[np.ndarray]
   """A ndarray containing the pixel values from 1-max value"""

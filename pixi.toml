@@ -42,6 +42,7 @@ jinja2 = ">=3.1.6,<4"
 ruff = ">=0.16.5,<0.17"
 ty = ">=0.0.77,<0.0.78"
 pre-commit = ">=4.6.2,<5"
+pandas = ">=3.0.5,<4"
 
 [environments.docs.dependencies]
 zensical = ">=0.0.57,<0.0.58"

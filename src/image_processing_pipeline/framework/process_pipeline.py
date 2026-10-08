@@ -111,10 +111,11 @@ class ProcessPipeline(BaseModel):
         # Prepare kwargs for instantiation
         kwargs = {"delivers_id_map": step_config["Deliverables"]}
         kwargs["inputs"] = {k: self.data_manager.get(v) for k, v in step_config["Inputs"].items()}
-        kwargs["options"] = {
-          id: self.data_manager.get(val) if isinstance(val, str) and self.data_manager.contains(val) else val
-          for id, val in step_config["Options"].items()  # Read from data manager if id is present
-        }
+        if "Options" in step_config:
+          kwargs["options"] = {
+            id: self.data_manager.get(val) if isinstance(val, str) and self.data_manager.contains(val) else val
+            for id, val in step_config["Options"].items()  # Read from data manager if id is present
+          }
 
         # Instantiate and execute
         process_class = process_steps[process_name]
@@ -182,7 +183,7 @@ class ProcessPipeline(BaseModel):
     if self.serialisation_path.exists() and self.framework_settings.prevent_override:
       raise FileExistsError(
         f"There are already valid results in {self.output_dir}.\n\t"
-        "Either provide a new `output_dir` or set `framework_config.prevent_override = False`"
+        "Either provide a new `output_dir` or set `framework_settings.prevent_override = False`"
       )
 
   def _validate_config(self):

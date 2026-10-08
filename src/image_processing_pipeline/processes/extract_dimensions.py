@@ -7,12 +7,14 @@ from image_processing_pipeline.framework.process_step import (
 
 from image_processing_pipeline._types import Input, Deliverable
 
+
 class ExtractDimensions(AbstractProcessStep):
-  """Extract the shape of a tiff stack; 
-  
+  """Extract the shape of a tiff stack.
+
   Will extract the depth, height and width of a stack of tiff files.
-  2d images will have a depth of 0."""
-  
+  2d images will have a depth of 0.
+  """
+
   input_stack: Input[np.ndarray]
   """A nparray contating the pixel values of a tiff image/stack"""
   
