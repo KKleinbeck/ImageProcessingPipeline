@@ -9,20 +9,22 @@ from image_processing_pipeline.framework.process_step import (
 from image_processing_pipeline._types import Input, Option, Deliverable
 
 class ApplyMorphologies(AbstractProcessStep):
-  """Apply morphological operations to the input stack according to the specified strategy."""  
+  """Apply morphological operations to the input stack according to the specified strategy."""
 
   input_stack: Input[np.ndarray]
   """A ndarray containing a 0/1 mask"""
 
   morphed_stack : Deliverable[np.ndarray] 
   """A ndarray containing a modified 0/1 mask that has undergone a morpholigcal operation."""
- 
-  strategy : Option[dict, "binary_erosion": {"iterations": 1}]
-  """The following options are available for morphological operartions. For further details please see SciPy documentation
+
+  strategy : Option[dict] = {"binary_erosion": {"iterations": 1}}
+  """The following options are available for morphological operartions.
     - binary_erosion
     - binary_dilation
     - binary_opening
     - binary_closing
+  Values to these keys are parameters passed to the underlying algorithms.
+  For further details please see SciPy documentation.
   """
 
   def _execute(self):

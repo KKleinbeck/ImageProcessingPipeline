@@ -10,14 +10,14 @@ from image_processing_pipeline._types import Input, Deliverable, Option
 
 class ExtractFrames(AbstractProcessStep):
   """Extract a set of frames from the input stack."""
-  
+
   input_stack: Input[np.ndarray]
   """A ndarray containing pixel values corresponding to a tiff image/stack """
-  
+
   extracted_frames: Deliverable[np.ndarray]
   """A ndarray contating only the pixel values from the tiff frame/s that were extracted"""
-  
-  frames = Option[list] = [0]
+
+  frames: Option[list] = [0]
   """List of frames to be extracted"""
 
   input_stack: Input[np.ndarray]

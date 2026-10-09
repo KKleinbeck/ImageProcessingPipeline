@@ -10,15 +10,15 @@ from image_processing_pipeline._types import RegexDeliverable, Deliverable
 
 
 class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
-  """ Computes statistics of the masked region of the input stack. 
-  
-      Deliverables:
-        - Each deliverable computes the statistic within the given masked region of an indivudal frame of the input stack. 
-        The following deliverables are available:
-        - mean: Mean intensity per frame.
-        - std: Standard deviation of intensity per frame.
-        - qX: X-th percentile of intensity per frame (e.g., q25 for 25th percentile).
-        - mode: Value which maximizes the probability density function of each frame.
+  """Computes statistics of the masked region of the input stack.
+
+  Deliverables:
+    - Each deliverable computes the statistic within the given masked region of an indivudal frame of the input
+      stack. The following deliverables are available:
+    - mean: Mean intensity per frame.
+    - std: Standard deviation of intensity per frame.
+    - qX: X-th percentile of intensity per frame (e.g., q25 for 25th percentile).
+    - mode: Value which maximizes the probability density function of each frame.
   """
 
   mean: Deliverable[list]
@@ -38,9 +38,12 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
     for key in self.deliverables_actual:
       if key.startswith("q"):
         quantile_str = key[1:]
-        raise ValueError(f"Invalid quantile deliverable '{key}'. Must be in format 'qX' where X is an integer.")
-      #TODO look at me
-      if quantile in self.quantiles:
+        if not quantile_str.isdigit():
+          raise ValueError(f"Invalid quantile deliverable '{key}'. Must be in format 'qX' where X is an integer.")
+        quantile = int(quantile_str)
+        if not (0 <= quantile <= 100):
+          raise ValueError(f"Quantile in deliverable '{key}' must be between 0 and 100.")
+        if quantile in self.quantiles:
           raise ValueError(f"Duplicate quantile deliverable 'q{quantile}'.")
         self.quantiles[quantile] = []
 
