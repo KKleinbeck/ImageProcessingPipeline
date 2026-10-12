@@ -10,8 +10,8 @@ class CullBoundary(CullingMixin, AbstractProcessStep):
   """Crops the ndarray to specified dimensions that define a region of interest.
 
   The values from the cropping are set via the options. For width and height, you can set up to 2 of the 3 parameters.
-  The width/height value will be followed first, followed by removing data from the exterior edges. 
-   - Width: Specified by left, right and width. 
+  The width/height value will be followed first, followed by removing data from the exterior edges.
+   - Width: Specified by left, right and width.
    - Height: pecified by top, bottom and height.
    - Offset:
   """

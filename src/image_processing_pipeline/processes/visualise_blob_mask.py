@@ -8,14 +8,15 @@ from image_processing_pipeline.framework.process_step import (
 from image_processing_pipeline._types import Input, Deliverable
 class VisualiseBlobMask(AbstractProcessStep):
   """Generate blob overlay.
-      Colour code:
-      - red overlay for detected blobs,
-      - green overlay for detected background.
-      """
 
+  Colour code:
+  - red overlay for detected blobs,
+  - green overlay for detected background.
+  """
+
+  # TODO: Refactor to be blob independent
   input_stack: Input[np.ndarray]
   """Original tiff stack"""
-
   blob_mask_stack: Input[np.ndarray]
   """Blob detection"""
   background_mask_stack: Input[np.ndarray]
@@ -23,7 +24,7 @@ class VisualiseBlobMask(AbstractProcessStep):
 
   overlay_mask: Deliverable[np.ndarray]
   """Combined"""
-  
+
   def _execute(self):
     blob_color = (1.0, 0.0, 0.0)
     bg_color = (0.0, 1.0, 0.0)

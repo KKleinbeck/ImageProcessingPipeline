@@ -5,34 +5,27 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
-from image_processing_pipeline._types import Input, Deliverable, Option  # WE ALSO NEVER USE THIS STEP, DO WE NEED IT
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 
 class ThresholdBinarise(AbstractProcessStep):
   """Binerises the image stack based on a threshold.
-  
-      Assume input is normalised to [0,1]. For this every pixel value below the threshold
-      is set to 0, every pixel value above or equal to the threshold is set to 1.
-      """
-  
-  input_stack: Input[np.ndarray]
-  """A ndarray containing values that have been normalised to between 0 and 1"""
-        
-  binary_stack: Deliverable[np.ndarray]
-  """An ndarray containing a 0/1 mask, where any 0 values were below the threshold, and 1 values were above"""
 
-  threshold : Option[float] = 0.5
-  """ Threshold value which defines what values will be considered 0 (below), and what values will be considered 1 (above)."""
+  Assume input is normalised to [0,1]. For this every pixel value below the threshold
+  is set to 0, every pixel value above or equal to the threshold is set to 1.
+  """
 
   input_stack: Input[np.ndarray]
-  """A ndarray that has pixel values that have been normalised to [0,1]"""  # THIS IS NOT A MASK CORRECT ??
+  """A ndarray that has pixel values that have been normalised to [0,1], unless `allow_non_normalised` was set."""
 
   binary_stack: Deliverable[np.ndarray]
   """A ndarray that has been binarised to 0 or 1, based on a threshold"""
+  """An ndarray containing a 0/1 mask, where any 0 values were below the threshold, and 1 values were above"""
 
   threshold: Option[float] = 0.5
   """Threshold value. All values above this will be converted to 1, all values below this will be converted to 0."""
   allow_non_normalised: Option[bool] = False
+  """Allow the values of input_stack to have an arbitrarty domain."""
 
   def _on_set_options(self):
     if not (np.all((self.input_stack >= 0) & (self.input_stack <= 1))) and not self.allow_non_normalised:

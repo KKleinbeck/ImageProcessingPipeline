@@ -24,7 +24,7 @@ class LoadStack(CullingMixin, AbstractProcessStep):
   former_image_shape: Deliverable[tuple]
   """Original shape of the ndarray prior to cropping"""
   culled_image_offset: Deliverable[tuple]
-  """Cropping offset values that were used to generate the cropped ndarray""" 
+  """Cropping offset values that were used to generate the cropped ndarray"""
 
   # Options and option verification inherited from CullBoundary
 

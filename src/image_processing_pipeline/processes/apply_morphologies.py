@@ -14,7 +14,7 @@ class ApplyMorphologies(AbstractProcessStep):
   input_stack: Input[np.ndarray]
   """A ndarray containing a 0/1 mask"""
 
-  morphed_stack : Deliverable[np.ndarray] 
+  morphed_stack : Deliverable[np.ndarray]
   """A ndarray containing a modified 0/1 mask that has undergone a morpholigcal operation."""
 
   strategy : Option[dict] = {"binary_erosion": {"iterations": 1}}

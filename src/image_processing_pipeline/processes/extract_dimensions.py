@@ -17,14 +17,14 @@ class ExtractDimensions(AbstractProcessStep):
 
   input_stack: Input[np.ndarray]
   """A nparray contating the pixel values of a tiff image/stack"""
-  
+
   depth: Deliverable[int]
   """Depth of tiff stack in frames"""
   width: Deliverable[int]
   """Width of image in tiff stack in pixels"""
   height: Deliverable[int]
   """Height of image in tiff stack in pixels"""
-  
+
   def _on_set_inputs(self):
     assert self.input_stack.ndim in [2, 3], f"Input stack must be 2D or 3D, got {self.input_stack.ndim}D."
 

@@ -20,7 +20,10 @@ class Extrapolate(AbstractProcessStep):
   """Stack of 0/1 masks, with potentially missing masks at the beginning or end."""
 
   extrapolated_stack: Deliverable[np.ndarray]
-  """Processed 0/1 mask stack. If frames at the beginning/end were initially blank, they now contain an extrapolated 0/1 masks."""
+  """
+  Processed 0/1 mask stack. If frames at the beginning/end were initially blank, they now contain an extrapolated 0/1
+  masks.
+  """
   extrapolated_frames: Deliverable[list]
   """List of booleans, indicating which frame have been extrapolated."""
 

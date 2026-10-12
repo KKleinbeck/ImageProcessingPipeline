@@ -17,7 +17,7 @@ class Invert(AbstractProcessStep):
   """A ndarray of 0/1 masks"""
 
   inverted_stack: Deliverable[np.ndarray]
-  """A ndarray of 0/1 masks. The 0/1 values are inverted from the input stack"""   
+  """A ndarray of 0/1 masks. The 0/1 values are inverted from the input stack"""
 
   def _on_set_inputs(self):
     assert np.all((self.input_stack >= 0) & (self.input_stack <= 1)), "Input stack must be in [0, 1] range."
