@@ -7,18 +7,24 @@ from image_processing_pipeline.framework.process_step import (
 )
 
 
+from image_processing_pipeline._types import Input, Deliverable, Option
+
+
 class GenerateBlobMask(AbstractProcessStep):
-  inputs = {"input_stack": np.ndarray, "mask_stack": np.ndarray}
-  deliverables = {"blob_mask": np.ndarray, "background_mask": np.ndarray, "blob_num": list}
-  options = {
-    "blur_sigma": (float, 3.5),
-    "core_thresh": (float, 1.5),
-    "std_sustain": (int, 5),
-    "std_threshold": (float, 0.55),
-    "halo_max_px": (float, 10.0),
-    "halo_intensity_factor": (float, 2.5),
-    "size_threshold": (int, 3),
-  }
+  input_stack: Input[np.ndarray]
+  mask_stack: Input[np.ndarray]
+
+  blob_mask: Deliverable[np.ndarray]
+  background_mask: Deliverable[np.ndarray]
+  blob_num: Deliverable[list]
+
+  blur_sigma: Option[float] = 3.5
+  core_thresh: Option[float] = 1.5
+  std_sustain: Option[int] = 5
+  std_threshold: Option[float] = 0.55
+  halo_max_px: Option[float] = 10.0
+  halo_intensity_factor: Option[float] = 2.5
+  size_threshold: Option[int] = 3
 
   @staticmethod
   def remove_global_background(frame, blur_sigma):

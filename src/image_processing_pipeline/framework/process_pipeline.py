@@ -183,7 +183,7 @@ class ProcessPipeline(BaseModel):
     if self.serialisation_path.exists() and self.framework_settings.prevent_override:
       raise FileExistsError(
         f"There are already valid results in {self.output_dir}.\n\t"
-        "Either provide a new `output_dir` or set `framework_config.prevent_override = False`"
+        "Either provide a new `output_dir` or set `framework_settings.prevent_override = False`"
       )
 
   def _validate_config(self):

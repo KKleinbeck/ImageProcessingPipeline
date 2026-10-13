@@ -1,5 +1,3 @@
-"""Computes statistics of the masked input stack."""
-
 import numpy as np
 
 from image_processing_pipeline.framework.process_step import (
@@ -12,19 +10,28 @@ from image_processing_pipeline._types import RegexDeliverable, Deliverable
 
 
 class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
-  """Computes statistics of the masked input stack."""
+  """Computes statistics of the masked region of the input stack.
+
+  Deliverables:
+    - Each deliverable computes the statistic within the given masked region of an indivudal frame of the input
+      stack. The following deliverables are available:
+    - mean: Mean intensity per frame.
+    - std: Standard deviation of intensity per frame.
+    - qX: X-th percentile of intensity per frame (e.g., q25 for 25th percentile).
+    - mode: Value which maximizes the probability density function of each frame.
+  """
 
   mean: Deliverable[list]
-  """Mean intensity per frame."""
+  """Mean intensity of the masked region for each frame"""
   std: Deliverable[list]
-  """Standard deviation of intensity per frame."""
+  """Standard deviation of intensity within the masked region for each frame"""
   weight: Deliverable[list]
-  """Area of the valid (i.e., non-masked) part of the image in fractional pixels."""
+  """Area in pixels of the masked region for each frame"""
   mode: Deliverable[list]
-  """Value which maximizes the probability density function of each frame."""
+  """Value which maximizes the probability density function of the masked region for each frame"""
 
-  quantile: RegexDeliverable[list, r"q\d+"]
-  """X-th percentile of intensity per frame (e.g., q25 for 25th percentile)."""
+  _quantile: RegexDeliverable[list, r"q\d+"]
+  """X-th percentile (e.g., q25 for 25th percentile) of intensity within the masked region for each frame"""
 
   def _on_verify_deliverables(self):
     self.quantiles = {}
@@ -73,8 +80,9 @@ class AnalyseStatistics(AbstractProcessStep, MaskedInputMixin):
     return 0.5 * (float(x[0]) + float(x[1]))
 
   def _execute(self):
-    if self.mode == "common_footprint":  # Override `_get_mask_at_frame` to always return the combined mask
+    if self.mask_mode == "common_footprint":
       combined_mask = np.any(self.mask_stack > 1, axis=0)
+      # Override to always return the combined mask
       self._get_mask_at_frame = lambda _frame_idx: combined_mask  # ty: ignore[invalid-assignment]
 
     self.mean, self.std, self.weight, self.mode = [], [], [], []

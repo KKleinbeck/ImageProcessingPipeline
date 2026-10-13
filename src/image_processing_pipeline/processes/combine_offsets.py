@@ -5,17 +5,29 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import RegexInput, Option, Deliverable
+
 
 class CombineOffsets(AbstractProcessStep):
-  inputs = {r"offset_\d+": tuple}
-  deliverables = {
-    "combined_offset": tuple,
-  }
+  """Combines multiple offsets through element-wise addition to provide a specific region of interest (ROI).
 
-  options = {"extra_horizontal": (int, 0), "extra_vertical": (int, 0)}
+  Takes a set of offsets and combines them with an optionally provided `extra_horizontal` and `extra_vertical` offset.
+  This element-wise sum is returned via `combined_offset`.
+  """
+
+  offset_: RegexInput[tuple, r"offset_\d+"]
+  """Offset value that has been previously generated through cropping or masking functions"""
+
+  combined_offset : Deliverable[tuple]
+  """Offset value which gives the co-ordinates to crop the image"""
+
+  extra_horizontal: Option[int] = 0
+  """Extra amount of offset to add to the width of the region (in pixels)"""
+  extra_vertical: Option[int] = 0
+  """Extra amount of offset to add to the height of the region (in pixels)"""
+
 
   def _execute(self):
-    """Combine multiple offsets through element-wise addition."""
     v_offset = self.extra_vertical
     h_offset = self.extra_horizontal
 

@@ -4,24 +4,29 @@ from image_processing_pipeline.framework.process_step import (
   AbstractProcessStep,
   process_steps,
 )
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 
 class RemoveOutliers(AbstractProcessStep):
-  inputs = {
-    "input_stack": np.ndarray,
-  }
-  deliverables = {
-    "filtered_stack": np.ndarray,
-  }
+  """Remove outliers from the ndarray.
 
-  options = {"lower_quantile": (float, 0.0), "upper_quantile": (float, 1.0)}
+  or this every pixel value below or above the quantile specified in the options parameter
+  is set to the respective quantile values.
+  """
+
+  input_stack: Input[np.ndarray]
+  """A ndarray containing pixel values corresponding to a tiff image/stack """
+
+  filtered_stack: Deliverable[np.ndarray]
+  """A ndarray containing pixel values that have had outlers above a specified threshold removed. 
+  These outliers have been set to the value of the threshold."""
+
+  lower_quantile: Option[float] = 0.0
+  """The value for the lower quantile. Any values below this will instead be set to this value"""
+  upper_quantile: Option[float] = 1.0
+  """The value for the upper quantile. Any values above this will instead be set to this value"""
 
   def _execute(self):
-    """Remove outliers from the image stack.
-
-    For this every pixel value below or above the quantile specified in the options parameter
-    is set to the respective quantile values.
-    """
     # Get quantiles for each slice
     ql = self.lower_quantile
     qh = self.upper_quantile

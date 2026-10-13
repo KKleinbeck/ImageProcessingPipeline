@@ -1,20 +1,32 @@
-from image_processing_pipeline.processes.mixins.culling import CullingMixin
 from pathlib import Path
 
 import numpy as np
 import tifffile as tiff
 
 from image_processing_pipeline.framework.process_step import AbstractProcessStep, process_steps
+from image_processing_pipeline.processes.mixins.culling import CullingMixin
 
 from image_processing_pipeline._types import Input, Deliverable
 
 
-class LoadStack(AbstractProcessStep, CullingMixin):
+class LoadStack(CullingMixin, AbstractProcessStep):
+  """Load a stack from a multipage tiff file.
+
+  Opens an image from a tiff file and crops the image to a region of interest (defined by CullBoundary).
+  If full_image_processing is True, no croppping will occur.
+  """
+
   input_path: Input[Path]
+  """Input path to tiff file"""
 
   loaded_stack: Deliverable[np.ndarray]
+  """A ndarray that has been cropped from its full size to a region of interest (defined by CullBoundary)"""
   former_image_shape: Deliverable[tuple]
+  """Original shape of the ndarray prior to cropping"""
   culled_image_offset: Deliverable[tuple]
+  """Cropping offset values that were used to generate the cropped ndarray"""
+
+  # Options and option verification inherited from CullBoundary
 
   def _on_set_inputs(self):
     with tiff.TiffFile(self.input_path) as tif:
@@ -22,7 +34,6 @@ class LoadStack(AbstractProcessStep, CullingMixin):
       self.former_image_shape = tif.pages[0].shape
 
   def _execute(self):
-    """Load a stack from a multipage tiff file."""
     top, bottom = self.top, self.bottom
     left, right = self.left, self.right
 

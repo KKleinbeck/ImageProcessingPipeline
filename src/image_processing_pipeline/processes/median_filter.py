@@ -6,26 +6,28 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import Input, Deliverable, Option
 
 class MedianFilter(AbstractProcessStep):
-  inputs = {
-    "input_stack": np.ndarray,
-  }
-  deliverables = {
-    "filtered_stack": np.ndarray,
-  }
+  """Apply a median filter to the image stack.
 
-  options = {
-    "iterations": (int, 1),
-    "size": (int, 3),
-  }
+  For this the scipy.ndimage.median_filter function is used. The filter is applied
+  `iterations` times with a filter size of `size`.
+  """
+
+  input_stack: Input[np.ndarray]
+  """A ndarray conatining a series of values."""
+
+  filtered_stack: Deliverable[np.ndarray]
+  """A ndarray which has had a median filter applied."""
+
+  iterations: Option[int] = 1
+  """Number of iterations - for further infortmation see `scipy.ndimage.median_filter`."""
+  size: Option[int] = 3
+  """Filter size - for further infortmation see `scipy.ndimage.median_filter`."""
+
 
   def _execute(self):
-    """Apply a median filter to the image stack.
-
-    For this the scipy.ndimage.median_filter function is used. The filter is applied
-    `iterations` times with a filter size of `size`.
-    """
     self.filtered_stack = np.copy(self.input_stack)
     for _ in range(self.iterations):
       self.filtered_stack = median_filter(self.filtered_stack, size=self.size, axes=(1, 2))

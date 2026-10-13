@@ -23,3 +23,4 @@
   - Refactor Inheritance chains by using mixins
   - Improve upon star fill
   - Introduce local variance filter
+  - Complain in the Pipeline, when a step defines more than "Deliverables", "Inputs", and "Options"

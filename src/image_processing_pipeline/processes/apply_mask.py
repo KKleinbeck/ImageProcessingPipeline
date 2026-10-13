@@ -5,17 +5,40 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import Input, Option, Deliverable
+
 
 class ApplyMask(AbstractProcessStep):
-  inputs = {
-    "input_stack": np.ndarray,
-    "mask_stack": np.ndarray,
-  }
-  deliverables = {
-    "masked_stack": np.ndarray,
-  }
+  """Masks the input stack with the mask stack.
 
-  options = {"mode": (str, "interpolate")}
+  Assumes that the mask stack has an equal or smaller depth than the input stack and that the mask frames
+  are evenly distributed throughout the input stack.
+  Modes:
+    - interpolate: Linearly interpolate between mask frames.
+    - common_footprint: Crop to the common footprint of the entire mask stack.
+    - previous: Use the previous mask frame for each input frame.
+    - next: Use the next mask frame for each input frame.
+  """
+
+  input_stack : Input[np.ndarray]
+  """An ndarray containing pixel values corresponding to a tiff image/stack """
+  mask_stack : Input[np.ndarray]
+  """
+  An ndarray containing a 0/1 mask that will be applied to the image stack.
+  Must be of an equal or smaller depth than the image stack and evenly distributed.
+  """
+
+  masked_stack: Deliverable[np.ndarray]
+  """ A ndarray containing either the original pixel values (where the mask is 1) or 0s (where the mask is 0)."""
+
+  mode: Option[str] = "Interpolate"
+  """
+  Mode of interpolation when the mask stack has a smaller depth than the input stack. There are four modes
+    - interpolate: Linearly interpolate between mask frames.
+    - common_footprint: Crop to the common footprint of the entire mask stack.
+    - previous: Use the previous mask frame for each input frame.
+    - next: Use the next mask frame for each input frame.
+  """
 
   def _on_set_inputs(self):
     assert self.input_stack.shape[0] >= self.mask_stack.shape[0], (
@@ -48,16 +71,7 @@ class ApplyMask(AbstractProcessStep):
     return weight_lower * self.mask_stack[lower_idx] + weight_upper * self.mask_stack[upper_idx]
 
   def _execute(self):
-    """Masks the input stack with the mask stack.
 
-    Assumes that the mask stack has a smaller depth than the input stack and that the mask frames
-    are evenly distributed throughout the input stack.
-    Modes:
-      - interpolate: Linearly interpolate between mask frames.
-      - common_footprint: Crop to the common footprint of the entire mask stack.
-      - previous: Use the previous mask frame for each input frame.
-      - next: Use the next mask frame for each input frame.
-    """
     if self.mode == "common_footprint":
       # Find common footprint
       combined_mask = np.any(self.mask_stack > 1, axis=0)

@@ -6,10 +6,25 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
+from image_processing_pipeline._types import Input, RegexDeliverable
 
 class ExtractObjects(AbstractProcessStep):
-  inputs = {"input_stack": np.ndarray}
-  deliverables = {r"object_stack_\d+": np.ndarray, r"offset_\d+": tuple}
+  """Extracts pixel-separated objects from the stack.
+
+  Individual objects are defined by regions that are separated from one another by more than one pixel within each
+  frame, but overlap by at least one pixel along the stack direction.
+  The amount of expected objects must be specified via the number of `object_stack_` and `offset_` deliverables
+  in the pipeline config and must match the actual number of objects found.
+  """
+
+  input_stack: Input[np.ndarray]
+  """A single/stack of tiff file/s"""
+
+  object_stack_: RegexDeliverable[np.ndarray, r"object_stack_\d+"]
+  """Stack of individual objects."""
+  offset_: RegexDeliverable[tuple, r"offset_\d+"]
+  """Offset of each object in the input_stack."""
+
 
   def _on_verify_deliverables(self):
     self.stacks = sorted({k for k in self.deliverables_actual if "stack" in k})
@@ -23,11 +38,6 @@ class ExtractObjects(AbstractProcessStep):
       assert s.split("_")[-1] == o.split("_")[-1], f"Mismatch of paring index. Tried to pair deliverables {s} and {o}."
 
   def _execute(self):
-    """Extracts a variable, but at execution time constant, number of objects from the stack.
-
-    Currently individual objects must be separated from one another by 0 pixels, but have
-    to have a pixel overlap amongs the stack direction.
-    """
     labelled, n_labels = nd.label(self.input_stack)
     n_expected = len(self.deliverables_actual) // 2
     assert n_labels == n_expected, f"Mismatch between objects found ({n_labels}) and expected number ({n_expected})"
