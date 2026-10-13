@@ -15,10 +15,10 @@ class FrameworkSettings(BaseModel):
   "Any data manager registered under `image_processing_pipeline.data_manager.data_managers`"
   execution_settings: ExecutionSettings = ExecutionSettings()
   pedantic_input_checking: bool = True
-  "Check pipeline config inputs thorough. If `True` do not allow extra inputs."
+  "Check pipeline config inputs thoroughly. If `True` do not allow extra inputs."
   pipeline_settings_name: str = "pipeline_settings.yaml"
-  "File name for serialised state of the pipeline and it's config."
-  prevent_override: bool = True
+  "File name for serialised state of the pipeline and its config."
+  prevent_override: bool = False
   "Prevent overriding previously successful results."
 
   @field_validator("data_manager_type", mode="after")

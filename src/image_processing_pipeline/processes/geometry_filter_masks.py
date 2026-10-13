@@ -23,6 +23,8 @@ class GeometryFilterMasks(AbstractProcessStep):
   filtered_mask_stack: Deliverable[np.ndarray]
   """A 0/1 mask stack which contains only regions of interest that meet the inputted requirements"""
 
+  object_count : Deliverable[list]
+
   min_aspect_dx_dy: Option[int | float] = 0.0
   """Minimum aspect ratio value of width to height (dx/dy)"""
   min_aspect_dy_dx: Option[int | float] = 0.0
@@ -56,6 +58,9 @@ class GeometryFilterMasks(AbstractProcessStep):
         if dX / (dY + 1e-6) < self.min_aspect_dx_dy or dY / (dX + 1e-6) < self.min_aspect_dy_dx:
           self.input_stack[n, *indices] = 0
     self.filtered_mask_stack = self.input_stack
+    self.object_count = [
+        nd.label(frame)[1]
+        for frame in self.filtered_mask_stack]
 
 
 process_steps["GeometryFilterMasks"] = GeometryFilterMasks

@@ -8,7 +8,7 @@ from image_processing_pipeline.framework.process_step import (
   process_steps,
 )
 
-from image_processing_pipeline._types import Input, Option, RegexDeliverable
+from image_processing_pipeline._types import Input, Option, RegexDeliverable, Deliverable
 
 
 class LocalModes(AbstractProcessStep):
@@ -28,7 +28,7 @@ class LocalModes(AbstractProcessStep):
 
   m_: RegexDeliverable[np.ndarray, r"m_\d+"]
   """Stack of local variance maps of the input frames."""
-
+  
   kernel_type: Option[str] = "gaussian"
   """Averaging kernel. Supports "gaussian" and "constant"."""
   kernel_size: Option[int] = 7
@@ -68,7 +68,7 @@ class LocalModes(AbstractProcessStep):
 
   def _execute(self):
     kernel = self._get_kernel()
-
+    
     for mode in self.deliverables_actual.keys():
       n = int(mode.split("_")[1])
       setattr(

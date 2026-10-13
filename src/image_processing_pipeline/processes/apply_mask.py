@@ -35,7 +35,6 @@ class ApplyMask(AbstractProcessStep):
         - previous: Use the previous mask frame for each input frame.
         - next: Use the next mask frame for each input frame.
   """
-
   def _on_set_inputs(self):
     assert self.input_stack.shape[0] >= self.mask_stack.shape[0], (
       "Input stack must have equal or greater depth than mask stack."
