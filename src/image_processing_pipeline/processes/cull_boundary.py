@@ -7,13 +7,12 @@ from image_processing_pipeline._types import Input, Deliverable
 
 
 class CullBoundary(CullingMixin, AbstractProcessStep):
-  """Crops the ndarray to specified dimensions that define a region of interest.
+  """Crops the input_stack to the specified dimensions (see `CullingMixin`).
 
-  The values from the cropping are set via the options. For width and height, you can set up to 2 of the 3 parameters.
-  The width/height value will be followed first, followed by removing data from the exterior edges.
-   - Width: Specified by left, right and width.
-   - Height: pecified by top, bottom and height.
-   - Offset:
+  The values from the cropping are set via the options. Following combinations are allowed
+   - Setting `top`, `right`, `bottom`, `left` individually.
+   - Setting `top` or `bottom` and `height`, and setting `left` or `right` and `width`.
+   - Setting `offset` and either `right` (`bottom`) or `width` (`height`).
   """
 
   input_stack: Input[np.ndarray]

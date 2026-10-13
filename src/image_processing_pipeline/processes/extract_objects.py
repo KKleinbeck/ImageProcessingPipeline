@@ -9,19 +9,21 @@ from image_processing_pipeline.framework.process_step import (
 from image_processing_pipeline._types import Input, RegexDeliverable
 
 class ExtractObjects(AbstractProcessStep):
-  """Extracts a variable, but at execution time constant, number of objects from the stack.
+  """Extracts pixel-separated objects from the stack.
 
-  Currently individual objects must be separated from one another by 0 pixels, but have
-  to have a pixel overlap amongs the stack direction.
+  Individual objects are defined by regions that are separated from one another by more than one pixel within each
+  frame, but overlap by at least one pixel along the stack direction.
+  The amount of expected objects must be specified via the number of `object_stack_` and `offset_` deliverables
+  in the pipeline config and must match the actual number of objects found.
   """
 
   input_stack: Input[np.ndarray]
   """A single/stack of tiff file/s"""
 
   object_stack_: RegexDeliverable[np.ndarray, r"object_stack_\d+"]
-  """"""
+  """Stack of individual objects."""
   offset_: RegexDeliverable[tuple, r"offset_\d+"]
-  """"""
+  """Offset of each object in the input_stack."""
 
 
   def _on_verify_deliverables(self):

@@ -16,15 +16,15 @@ class MedianFilter(AbstractProcessStep):
   """
 
   input_stack: Input[np.ndarray]
-  """A ndarray conatining a series of values"""
+  """A ndarray conatining a series of values."""
 
   filtered_stack: Deliverable[np.ndarray]
-  """A ndarray which has had a median filter applied"""
+  """A ndarray which has had a median filter applied."""
 
-  iterations: Option[int] =1
-  """Number of iterations - for further infortmation see scipy.ndimage.median_filter"""
+  iterations: Option[int] = 1
+  """Number of iterations - for further infortmation see `scipy.ndimage.median_filter`."""
   size: Option[int] = 3
-  """Filter size - for further infortmation see scipy.ndimage.median_filter"""
+  """Filter size - for further infortmation see `scipy.ndimage.median_filter`."""
 
 
   def _execute(self):

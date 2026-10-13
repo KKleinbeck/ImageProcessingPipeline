@@ -9,13 +9,13 @@ from image_processing_pipeline._types import Input, Deliverable
 
 
 class Normalise(AbstractProcessStep):
-  """Normalises the pixel values in a ndarray to [0, 1] range."""
+  """Normalises the pixel values in a ndarray to [0, 1]."""
 
   input_stack: Input[np.ndarray]
-  """A ndarray containing the pixel values from 1-max value"""
+  """An ndarray containing the pixel values from 1-max value"""
 
   normalised_stack: Deliverable[np.ndarray]
-  """A ndarray contating values normalised to between 0 - 1"""
+  """An ndarray contating values normalised to [0, 1]."""
 
   def _execute(self):
     min_vals = self.input_stack.min(axis=(1, 2), keepdims=True)

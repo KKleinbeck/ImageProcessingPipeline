@@ -23,7 +23,7 @@ class FourierDenoise(AbstractProcessStep):
   """A ndarray of 0/1 masks which which has been denoised"""
 
   denoise_level: Option[float] = 1.0
-  """A value between 0 -1 which denotes XXXXXXXXXXXXXXX""" # TODO fix
+  """A value in (0, 1] denoting the threshold value as a relative amplitude."""
 
 
   def _on_set_options(self):

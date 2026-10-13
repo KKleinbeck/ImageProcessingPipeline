@@ -3,13 +3,13 @@ from image_processing_pipeline._types import Option, Deliverable
 
 class CullingMixin:
   top: Option[int | float] = 0
-  "Cull frame from the top. Incompatible with options `height` and `offset`."
+  "Cull frame from the top. Incompatible with option `offset`, or setting both `height` and `bottom`."
   bottom: Option[int | float] = 0
-  "Cull image from the bottom. Incompatible with option `height`"
+  "Cull image from the bottom. Incompatible with setting both `top` and `height`"
   left: Option[int | float] = 0
-  "Cull frame from the left. Incompatible with options `width` and `offset`."
+  "Cull frame from the left. Incompatible with option `offset`, or both setting both `right` and `width`."
   right: Option[int | float] = 0
-  "Cull frame from the right. Incompatible with option `width`."
+  "Cull frame from the right. Incompatible with setting both `left` and `width`."
   width: Option[int | float | None] = None
   "Cull frame to given width. Incompatible with setting both `left` and `right`."
   height: Option[int | float | None] = None

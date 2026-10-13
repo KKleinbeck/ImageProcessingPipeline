@@ -11,9 +11,8 @@ from image_processing_pipeline._types import RegexInput, Option, Deliverable
 class CombineOffsets(AbstractProcessStep):
   """Combines multiple offsets through element-wise addition to provide a specific region of interest (ROI).
 
-  Takes the offsets that are generated in previous steps and combines them to define a 'region of interest' (ROI) around
-  the structure. The extra_horizontal and extra_vertical provide a buffer around the ROI to ensure the cropped region
-  contains the entire ROI in case of imaging drift.
+  Takes a set of offsets and combines them with an optionally provided `extra_horizontal` and `extra_vertical` offset.
+  This element-wise sum is returned via `combined_offset`.
   """
 
   offset_: RegexInput[tuple, r"offset_\d+"]
