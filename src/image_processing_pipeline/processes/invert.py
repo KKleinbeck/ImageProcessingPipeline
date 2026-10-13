@@ -10,14 +10,14 @@ from image_processing_pipeline._types import Input, Deliverable
 class Invert(AbstractProcessStep):
   """Inverts the image stack.
 
-  Assumes input is normalised to [0, 1]. Then the image is inverted by calculating 1 - image.
+  Takes an input in range [0, 1]. Then the image is inverted by calculating 1 - image.
   """
 
   input_stack: Input[np.ndarray]
-  """A ndarray of 0/1 masks"""
+  """An ndarray of [0, 1] values."""
 
   inverted_stack: Deliverable[np.ndarray]
-  """A ndarray of 0/1 masks. The 0/1 values are inverted from the input stack"""
+  """An ndarray of of inverted values, i.e., 1 - input_stack."""
 
   def _on_set_inputs(self):
     assert np.all((self.input_stack >= 0) & (self.input_stack <= 1)), "Input stack must be in [0, 1] range."
