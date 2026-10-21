@@ -12,26 +12,25 @@ class VarianceThresh(AbstractProcessStep):
 
   The threshold is based upon
   """
-  variance: Input[list]
+  values: Input[list]
 
-  std_sustain : Option[int] = 5
-  std_threshold : Option[float] = 0.1  
+  sustain : Option[int] = 5
+  threshold : Option[float] = 0.1  
 
-  variance_thresh: Deliverable[int]
+  first_frame_over_threshold: Deliverable[int]
   """Mean intensity of the masked region for each frame"""
 
   def _execute(self):
-    normalised_variance = np.asarray(self.variance, dtype=float)
-    normalised_variance /= np.max(normalised_variance)
-    T = len(normalised_variance)
+    normalised_values = np.asarray(self.values, dtype=float)
+    normalised_values /= np.max(normalised_values)
+    T = len(normalised_values)
     onset = 0  # default: no onset detected
-    print(normalised_variance)
-    for t in range(T - self.std_sustain + 1):
-      if np.all(normalised_variance[t : t + self.std_sustain] > self.std_threshold):
+    
+    for t in range(T - self.sustain + 1):
+      if np.all(normalised_values[t : t + self.sustain] > self.threshold):
         onset = t
         break
-    print(onset)
-
-    self.variance_thresh = onset
+    print(onset)    
+    self.first_frame_over_threshold = onset
       
 process_steps["VarianceThresh"] = VarianceThresh

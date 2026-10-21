@@ -27,7 +27,7 @@ from image_processing_pipeline.processes.remove_zero_pixels import RemoveZeroPix
 from image_processing_pipeline.processes.shrink_to_content import ShrinkToContent
 from image_processing_pipeline.processes.star_fill import StarFill
 from image_processing_pipeline.processes.threshold_binarise import ThresholdBinarise
-from image_processing_pipeline.processes.variance_thresh import VarianceThresh
+from image_processing_pipeline.processes.threshold_detector import ThresholdDetector
 from image_processing_pipeline.processes.visualise_blob_mask import VisualiseBlobMask
 
 
@@ -59,6 +59,7 @@ __all__ = [
   "ShrinkToContent",
   "StarFill",
   "ThresholdBinarise",
-  "VisualiseBlobMask",
-  "VarianceThresh"
+  "ThresholdDetector"
+  "VisualiseBlobMask"
+
 ]

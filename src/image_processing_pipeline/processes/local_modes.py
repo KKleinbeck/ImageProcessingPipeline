@@ -32,9 +32,10 @@ class LocalModes(AbstractProcessStep):
   kernel_type: Option[str] = "gaussian"
   """Averaging kernel. Supports "gaussian" and "constant"."""
   kernel_size: Option[int] = 7
-  """Pixel size (width and hight) of the kernel.
+  """Pixel size (width and hight) of the kernel."""
+  separable: Option[bool] = True
 
-  For a Gaussian kernel sigma will be roughly a third of the kernel_size and the kernel size will
+  """For a Gaussian kernel sigma will be roughly a third of the kernel_size and the kernel size will
   always be rounded to an odd number.
   """
   mode: Option[str] = "constant"
@@ -57,25 +58,31 @@ class LocalModes(AbstractProcessStep):
 
   def _get_kernel(self) -> np.ndarray:
     if self.kernel_type == "constant":
+      if self.separable:
+        return np.ones(self.kernel_size) / self.kernel_size
       return np.ones((self.kernel_size, self.kernel_size)) / self.kernel_size**2
 
     x_max = self.kernel_size // 2
     sigma = x_max / 3
     xs = np.linspace(-x_max, x_max, 2*x_max + 1)
     gaussian_kernel_1d =  np.exp(- xs**2 / (2. * sigma**2))
+    if self.separable:
+      return gaussian_kernel_1d / gaussian_kernel_1d.sum()
     return np.outer(gaussian_kernel_1d, gaussian_kernel_1d) / np.sum(gaussian_kernel_1d)**2
 
 
   def _execute(self):
-    kernel = self._get_kernel()
-    
     for mode in self.deliverables_actual.keys():
-      n = int(mode.split("_")[1])
-      setattr(
-        self,
-        mode,
-        nd.convolve(self.input_stack**n, kernel, mode=self.mode, axes=(1, 2))
-      )
+        n = int(mode.split("_")[1])
+        powered = self.input_stack**n
+        
+        if self.separable:
+            kernel = self._get_kernel() 
+            tmp = nd.convolve1d(powered, kernel, axis=1, mode=self.mode)
+            setattr(self, mode, nd.convolve1d(tmp, kernel, axis=2, mode=self.mode))
+        else:
+            kernel = self._get_kernel() 
+            setattr(self, mode, nd.convolve(powered, kernel, axes=(1,2), mode=self.mode))
 
 
 process_steps["LocalModes"] = LocalModes

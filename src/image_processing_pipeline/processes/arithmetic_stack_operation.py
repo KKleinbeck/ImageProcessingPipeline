@@ -23,13 +23,14 @@ class ArithmeticStackOperation(AbstractProcessStep):
     - add: addition (a + b)
     - subtract: subtraction (a - b)
     - multiply: multiplication ( a * b)
-    - divide: division ( a / b) """
+    - divide: division ( a / b)
+    - sqrt: Calculate the square root """
 
   def _on_set_inputs(self):
     assert self.stack_a.shape == self.stack_b.shape, "Input stacks must have the same shape"
 
   def _on_set_options(self):
-    assert self.operation in {"add", "subtract", "multiply", "divide"}, f"Unknown operation '{self.operation}'"
+    assert self.operation in {"add", "subtract", "multiply", "divide", "sqrt" }, f"Unknown operation '{self.operation}'"
 
   def _execute(self):
     if self.operation == "add":
@@ -40,6 +41,8 @@ class ArithmeticStackOperation(AbstractProcessStep):
       self.result_stack = self.stack_a * self.stack_b
     elif self.operation == "divide":
       self.result_stack = self.stack_a / self.stack_b
+    elif self.operation == "sqrt":
+      self.result_stack =  np.sqrt(self.stack_a)
 
 
 process_steps["ArithmeticStackOperation"] = ArithmeticStackOperation
