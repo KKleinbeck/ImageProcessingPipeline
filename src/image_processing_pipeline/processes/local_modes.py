@@ -26,6 +26,9 @@ class LocalModes(AbstractProcessStep):
   input_stack: Input[np.ndarray]
   """Input stack to be analysed."""
 
+  mask_stack: Input[np.ndarray]
+  """Input stack to be analysed."""
+  
   m_: RegexDeliverable[np.ndarray, r"m_\d+"]
   """Stack of local variance maps of the input frames."""
   
@@ -58,9 +61,8 @@ class LocalModes(AbstractProcessStep):
 
   def _get_kernel(self) -> np.ndarray:
     if self.kernel_type == "constant":
-      if self.separable:
-        return np.ones(self.kernel_size) / self.kernel_size
-      return np.ones((self.kernel_size, self.kernel_size)) / self.kernel_size**2
+      return np.ones(self.kernel_size) / self.kernel_size
+   
 
     x_max = self.kernel_size // 2
     sigma = x_max / 3
@@ -72,17 +74,24 @@ class LocalModes(AbstractProcessStep):
 
 
   def _execute(self):
-    for mode in self.deliverables_actual.keys():
-        n = int(mode.split("_")[1])
-        powered = self.input_stack**n
-        
-        if self.separable:
-            kernel = self._get_kernel() 
-            tmp = nd.convolve1d(powered, kernel, axis=1, mode=self.mode)
-            setattr(self, mode, nd.convolve1d(tmp, kernel, axis=2, mode=self.mode))
-        else:
-            kernel = self._get_kernel() 
-            setattr(self, mode, nd.convolve(powered, kernel, axes=(1,2), mode=self.mode))
 
+  
+
+    kernel = self._get_kernel()
+    mask_float = self.mask_stack.astype(np.float32)
+    den = nd.convolve1d(mask_float, kernel, axis=1, mode=self.mode)
+    den = nd.convolve1d(den, kernel, axis=2, mode=self.mode)
+    print(np.unique(den))
+   
+
+    for mode_key in self.deliverables_actual.keys():
+      n = int(mode_key.split("_")[1])
+      powered = self.input_stack ** n
+
+      num = nd.convolve1d(powered, kernel, axis=1, mode=self.mode)
+      num = nd.convolve1d(num,     kernel, axis=2, mode=self.mode)
+      setattr(self, mode_key, num / np.maximum(den, 1e-9))
+
+    
 
 process_steps["LocalModes"] = LocalModes
