@@ -28,19 +28,17 @@ class LocalModes(AbstractProcessStep):
 
   mask_stack: Input[np.ndarray]
   """Input stack to be analysed."""
-  
+
   m_: RegexDeliverable[np.ndarray, r"m_\d+"]
   """Stack of local variance maps of the input frames."""
-  
+
   kernel_type: Option[str] = "gaussian"
   """Averaging kernel. Supports "gaussian" and "constant"."""
-  kernel_size: Option[int] = 7
-  """Pixel size (width and hight) of the kernel."""
-  separable: Option[bool] = True
+  kernel_size: Option[int] = 11
+  """Pixel size (width and hight) of the kernel.
 
-  """For a Gaussian kernel sigma will be roughly a third of the kernel_size and the kernel size will
-  always be rounded to an odd number.
-  """
+  For a Gaussian kernel sigma will be roughly a third of the kernel_size and the kernel size will
+  always be rounded to an odd number."""
   mode: Option[str] = "constant"
   """Parameter determines how input frame is extended beyond its boundaries.
 
@@ -62,36 +60,27 @@ class LocalModes(AbstractProcessStep):
   def _get_kernel(self) -> np.ndarray:
     if self.kernel_type == "constant":
       return np.ones(self.kernel_size) / self.kernel_size
-   
 
     x_max = self.kernel_size // 2
     sigma = x_max / 3
     xs = np.linspace(-x_max, x_max, 2*x_max + 1)
-    gaussian_kernel_1d =  np.exp(- xs**2 / (2. * sigma**2))
-    if self.separable:
-      return gaussian_kernel_1d / gaussian_kernel_1d.sum()
-    return np.outer(gaussian_kernel_1d, gaussian_kernel_1d) / np.sum(gaussian_kernel_1d)**2
+    gaussian_kernel =  np.exp(- xs**2 / (2. * sigma**2))
+    return gaussian_kernel / gaussian_kernel.sum()
 
 
   def _execute(self):
-
-  
-
     kernel = self._get_kernel()
     mask_float = self.mask_stack.astype(np.float32)
-    den = nd.convolve1d(mask_float, kernel, axis=1, mode=self.mode)
-    den = nd.convolve1d(den, kernel, axis=2, mode=self.mode)
-    print(np.unique(den))
-   
+    denominator = nd.convolve1d(mask_float, kernel, axis=1, mode=self.mode)
+    denominator = nd.convolve1d(denominator, kernel, axis=2, mode=self.mode)
 
     for mode_key in self.deliverables_actual.keys():
       n = int(mode_key.split("_")[1])
       powered = self.input_stack ** n
 
-      num = nd.convolve1d(powered, kernel, axis=1, mode=self.mode)
-      num = nd.convolve1d(num,     kernel, axis=2, mode=self.mode)
-      setattr(self, mode_key, num / np.maximum(den, 1e-9))
+      numerator = nd.convolve1d(powered, kernel, axis=1, mode=self.mode)
+      numerator = nd.convolve1d(numerator,     kernel, axis=2, mode=self.mode)
+      setattr(self, mode_key, numerator / np.maximum(denominator, 1e-9))
 
-    
 
 process_steps["LocalModes"] = LocalModes
