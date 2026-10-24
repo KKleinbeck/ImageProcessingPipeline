@@ -19,7 +19,7 @@ class ApplyNumpyMethod(AbstractProcessStep):
   - If the numpy ufunc requires one input argument, then the ufunc is applied on each input stack
     individually. For this each input stack must have one associated deliverable stack, with a
     matching index.
-  - If the numpy ufunc requires more than one argument (e.g. `np.add`, `np.multiply`) then we this
+  - If the numpy ufunc requires more than one argument (e.g. `np.add`, `np.multiply`) then this
     step expects exactly this number of inputs. In this case the process step must also have
     exactly one deliverable, labelled `output_stack_1`.
   - Universal functions that produce more than one output stack are not supported currently.
