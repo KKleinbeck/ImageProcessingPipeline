@@ -23,6 +23,7 @@ class ApplyMorphologies(AbstractProcessStep):
     - binary_dilation
     - binary_opening
     - binary_closing
+    - binary_fill_holes
   Values to these keys are parameters passed to the underlying algorithms.
   For further details please see SciPy documentation.
   """
@@ -47,6 +48,10 @@ class ApplyMorphologies(AbstractProcessStep):
       elif name == "binary_closing":
         iterations = params.get("iterations", 1)
         self.input_stack = nd.binary_closing(self.input_stack, iterations=iterations, axes=(1, 2)).astype(
+          self.input_stack.dtype
+        )
+      elif name == "binary_fill_holes":
+        self.input_stack = nd.binary_fill_holes(self.input_stack, axes=(1, 2)).astype(
           self.input_stack.dtype
         )
     self.morphed_stack = self.input_stack
