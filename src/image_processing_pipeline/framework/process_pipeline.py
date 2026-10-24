@@ -182,10 +182,10 @@ class ProcessPipeline(BaseModel):
   def _validate_clean_outputs(self):
     if self.serialisation_path.exists() and self.framework_settings.prevent_override:
       print("hey this is silly")
-     # raise FileExistsError(
-     #   f"There are already valid results in {self.output_dir}.\n\t"
-     #   "Either provide a new `output_dir` or set `framework_settings.prevent_override = False`"
-     # )
+    # raise FileExistsError(
+    #   f"There are already valid results in {self.output_dir}.\n\t"
+    #   "Either provide a new `output_dir` or set `framework_settings.prevent_override = False`"
+    # )
 
   def _validate_config(self):
     """Validate the content of the config.
@@ -290,6 +290,12 @@ class ProcessPipeline(BaseModel):
 
       serialisation_targets = set()
       for serialisation in serialisations:
+        if not isinstance(serialisation, dict):
+          raise ValueError(
+            "Each entry to Config field `Serialisations` must be a dictionary with the keys "
+            f"'Data', and 'RelativeOutputPath'. Got \n\t{serialisation}\ninstead."
+          )
+
         required_keys = {"Data", "RelativeOutputPath"}
         missing_keys = required_keys - serialisation.keys()
         if missing_keys:

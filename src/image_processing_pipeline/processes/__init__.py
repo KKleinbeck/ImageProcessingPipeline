@@ -2,6 +2,7 @@
 
 from image_processing_pipeline.processes.analyse_statistics import AnalyseStatistics
 from image_processing_pipeline.processes.apply_mask import ApplyMask
+from image_processing_pipeline.processes.apply_numpy_method import ApplyNumpyMethod
 from image_processing_pipeline.processes.apply_morphologies import ApplyMorphologies
 from image_processing_pipeline.processes.arithmetic_stack_operation import ArithmeticStackOperation
 from image_processing_pipeline.processes.combine_offsets import CombineOffsets
@@ -34,6 +35,7 @@ from image_processing_pipeline.processes.visualise_blob_mask import VisualiseBlo
 __all__ = [
   "AnalyseStatistics",
   "ApplyMask",
+  "ApplyNumpyMethod",
   "ApplyMorphologies",
   "ArithmeticStackOperation",
   "CombineOffsets",
@@ -59,7 +61,6 @@ __all__ = [
   "ShrinkToContent",
   "StarFill",
   "ThresholdBinarise",
-  "ThresholdDetector"
-  "VisualiseBlobMask"
-
+  "ThresholdDetector",
+  "VisualiseBlobMask",
 ]
